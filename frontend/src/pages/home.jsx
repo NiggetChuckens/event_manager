@@ -2,28 +2,28 @@ import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
-    <div className="container py-5">
-      <header className="text-center mb-5">
-        <h1 className="display-4">Bienvenido al Gestor de Eventos Empresariales</h1>
-        <p className="lead">Organiza, gestiona y participa en eventos de manera eficiente.</p>
+    <div className="container text-center py-5">
+      <div className="bg-light p-5 rounded-4 shadow">
+        <h1 className="display-5 fw-bold text-primary">🎉 Bienvenido al Gestor de Eventos</h1>
+        <p className="lead text-secondary">Organiza, gestiona y participa en eventos de forma divertida y profesional.</p>
         <div className="d-flex justify-content-center gap-3 mt-4">
-          <Link to="/create" className="btn btn-primary">Crear evento</Link>
-          <Link to="/events" className="btn btn-outline-secondary">Ver eventos</Link>
+          <Link to="/create" className="btn btn-success px-4">✨ Crear evento</Link>
+          <Link to="/events" className="btn btn-outline-primary px-4">📅 Ver eventos</Link>
         </div>
-      </header>
+      </div>
 
-      <section className="mb-5">
-        <h2 className="h4 mb-3">📌 Próximos eventos</h2>
-        <ul className="list-group">
-          <li className="list-group-item">📅 Reunión mensual de equipo - <strong>15 de abril</strong></li>
-          <li className="list-group-item">🎉 Lanzamiento de producto - <strong>20 de abril</strong></li>
-          <li className="list-group-item">🧠 Taller de capacitación - <strong>25 de abril</strong></li>
+      <div className="mt-5">
+        <h3 className="text-dark">📢 Próximos eventos</h3>
+        <ul className="list-group list-group-flush mt-3">
+          <li className="list-group-item">📅 Reunión mensual de equipo - 15 de abril</li>
+          <li className="list-group-item">🎉 Lanzamiento de producto - 20 de abril</li>
+          <li className="list-group-item">🧠 Taller de capacitación - 25 de abril</li>
         </ul>
-      </section>
+      </div>
 
-      <footer className="text-center text-muted">
-        <p>¿Nuevo aquí? <Link to="/register" className="text-decoration-none">Regístrate</Link></p>
-        <p>¿Ya tienes cuenta? <Link to="/login" className="text-decoration-none">Inicia sesión</Link></p>
+      <footer className="mt-5 text-muted">
+        <p>¿Nuevo aquí? <Link to="/register" className="text-decoration-none text-primary">Regístrate</Link></p>
+        <p>¿Ya tienes cuenta? <Link to="/login" className="text-decoration-none text-primary">Inicia sesión</Link></p>
       </footer>
     </div>
   );
