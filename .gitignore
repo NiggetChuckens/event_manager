@@ -24,6 +24,8 @@ frontend/yarn-error.log*
 
 .vscode/
 
+src/backend/db/eventos.db
+
 env/
 
 src/backend/db/__pycache__/
