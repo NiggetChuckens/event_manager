@@ -1,6 +1,5 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
+env/
 /frontend/node_modules
 /frontend/.pnp
 frontend.pnp.js
@@ -12,12 +11,12 @@ frontend.pnp.js
 /frontend/build
 
 # misc
+.vscode/
 frontend/.DS_Store
 frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
-
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
@@ -29,3 +28,7 @@ src/backend/db/eventos.db
 env/
 
 src/backend/db/__pycache__/
+
+# private files
+.env
+eventos.db
