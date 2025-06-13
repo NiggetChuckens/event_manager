@@ -26,18 +26,20 @@ Event Manager is a React-based web application designed to streamline the proces
 ## Technologies Used
 
 - Frontend: React
-- Backend: Node
-- Database: TBD
-- Languages: JavaScript (JSX/JS), CSS
+- Backend: Flask
+- Database: SQLite
+- Languages: Python, JavaScript (JSX/JS), CSS
 - Build Tools: Webpack, Babel
 
 ## Project Structure
 
-Here's an overview of the project structure:
+Here's an updated overview of the project structure:
 ```
 event_manager/
 ├── backend/
-│   └── main.js
+│   ├── main.py
+│   ├── db/
+│   │   ├── db_init.py
 ├── frontend/
 │   ├── public/
 │   │   ├── index.html
@@ -46,18 +48,49 @@ event_manager/
 │   │   ├── manifest.json
 │   │   └── favicon.ico
 │   ├── src/
-│   │   ├── App.js
-│   │   ├── App.test.js
+│   │   ├── App.jsx
 │   │   ├── index.js
 │   │   ├── index.css
-│   │   ├── App.css
-│   │   ├── setupTests.js
-│   │   └── reportWebVitals.js
-│   ├── .gitignore
-│   ├── package.json
-│   └── webpack.config.js
-└── README.md
+│   │   ├── reportWebVitals.js
+│   │   └── pages/
+├── env/
+│   ├── pyvenv.cfg
+│   ├── Include/
+│   ├── Lib/
+│   │   ├── site-packages/
+│   │   │   ├── flask/
+│   │   │   ├── sqlite3/
+│   │   │   └── ...
+│   ├── Scripts/
+│   │   ├── activate
+│   │   ├── activate.bat
+│   │   ├── Activate.ps1
+│   │   ├── flask.exe
+│   │   ├── python.exe
+│   │   └── ...
+├── README.md
+└── requirements.txt
 ```
+
+## Getting Started
+
+1. Clone the repository.
+2. Set up the virtual environment using Python:
+  <br>For debian based linux distro use `sudo apt install python3-virtualenv` to install virtualenv
+  <br>For arch based linux distro use `sudo pacman -S python3-virtualenv` to install virtualenv
+  <br>For windows use `pip install virtualenv` to install virtualenv
+  <br>And then activate the virtual environment to work with it.
+3. Install the required dependencies using `pip install -r requirements.txt`.
+4. Run the backend server using `python backend/main.py`.
+5. Navigate to the frontend directory and start the React development server.
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request.
+
+## License
+
+This project is licensed under the MIT License.
 
 # Event Manager Roadmap
 

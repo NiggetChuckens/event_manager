@@ -23,3 +23,7 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
 .vscode/
+
+env/
+
+src/backend/db/__pycache__/
