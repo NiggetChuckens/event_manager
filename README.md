@@ -23,13 +23,91 @@ Event Manager is a React-based web application designed to streamline the proces
 - Search and filter events
 - Responsive design for optimal viewing experience across devices
 
+## Updated Features
+
+- User authentication and authorization
+  - Signup and login functionality
+  - Admin-only user deletion
+
 ## Technologies Used
 
 - Frontend: React
 - Backend: Flask
 - Database: SQLite
-- Languages: Python, JavaScript (JSX/JS), CSS
+- Languages: Python, JavaScript (JSX/JS), CSS, SQL
 - Build Tools: Webpack, Babel
+
+## API Endpoints
+
+### `/signup`
+- **Method**: POST
+- **Description**: Allows users to sign up.
+- **Request Body**:
+  ```json
+  {
+    "nombre": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "password123",
+    "rol": "user"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "message": "User signed up successfully"
+  }
+  ```
+
+### `/login`
+- **Method**: POST
+- **Description**: Allows users to log in.
+- **Request Body**:
+  ```json
+  {
+    "email": "john.doe@example.com",
+    "password": "password123"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "message": "Login successful, rol: user"
+  }
+  ```
+- **Request Body**:
+  ```json
+  {
+    "email": "john.doe_2@example.com",
+    "password": "password123"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "message": "Login successful, rol: administrator"
+  }
+  ```
+
+### `/delete_user`
+- **Method**: POST
+- **Description**: Allows an admin to delete a user.
+- **Request Body**:
+  ```json
+  {
+    "admin_email": "admin@example.com",
+    "target_email": "john.doe@example.com"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "message": "User deleted successfully"
+  }
+  ```
 
 ## Project Structure
 
@@ -40,6 +118,8 @@ event_manager/
 │   ├── main.py
 │   ├── db/
 │   │   ├── db_init.py
+│   ├── functions/
+│   │   ├── user_magnament.py
 ├── frontend/
 │   ├── public/
 │   │   ├── index.html
@@ -53,21 +133,6 @@ event_manager/
 │   │   ├── index.css
 │   │   ├── reportWebVitals.js
 │   │   └── pages/
-├── env/
-│   ├── pyvenv.cfg
-│   ├── Include/
-│   ├── Lib/
-│   │   ├── site-packages/
-│   │   │   ├── flask/
-│   │   │   ├── sqlite3/
-│   │   │   └── ...
-│   ├── Scripts/
-│   │   ├── activate
-│   │   ├── activate.bat
-│   │   ├── Activate.ps1
-│   │   ├── flask.exe
-│   │   ├── python.exe
-│   │   └── ...
 ├── README.md
 └── requirements.txt
 ```
@@ -95,7 +160,7 @@ This project is licensed under the MIT License.
 # Event Manager Roadmap
 
 ## Version 1.0 - Core Event Management
-- [ ] Basic user authentication and authorization
+- [✔] Basic user authentication and authorization
 - [ ] Event CRUD operations
   - [ ] Create event form with basic details (date, time, location)
   - [ ] Event listing and detail views
