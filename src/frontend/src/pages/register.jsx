@@ -34,7 +34,7 @@ const Register = () => {
           backgroundColor: '#93E495'
         }}
       >
-        
+        {/* ✅ Títulos personalizados */}
         <h1
           className="text-center mb-2"
           style={{
@@ -93,7 +93,7 @@ const Register = () => {
             />
           </div>
 
-          
+          {/* ✅ Botón con color personalizado */}
           <button
             type="submit"
             className="btn w-100"
