@@ -1,6 +1,6 @@
 # Event Manager
 
-This project is a front-end web application for managing events. It provides a user-friendly interface for users to view, create, update, and delete events.
+This project is a Full-stack web application for managing events. It provides a user-friendly interface for users to view, create, update, and delete events.
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ Event Manager is a React-based web application designed to streamline the proces
 - Search and filter events
 - Responsive design for optimal viewing experience across devices
 
-## Updated Features
+## Last updated Features
 
 - User authentication and authorization
   - Signup and login functionality
@@ -31,7 +31,7 @@ Event Manager is a React-based web application designed to streamline the proces
 
 ## Technologies Used
 
-- Frontend: React
+- Frontend: React + Next.js
 - Backend: Flask
 - Database: SQLite
 - Languages: Python, JavaScript (JSX/JS), CSS, SQL
