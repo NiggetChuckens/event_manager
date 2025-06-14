@@ -27,3 +27,5 @@ frontend/yarn-error.log*
 env/
 
 src/backend/db/__pycache__/
+src/backend/eventos.db
+.env
