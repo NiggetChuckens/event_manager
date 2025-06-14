@@ -1,9 +1,9 @@
-import os, sqlite3
+import os, sqlite3, dotenv; dotenv.load_dotenv()
 
 class Database:
     def __init__(self):
-        self.db_name = 'eventos.db'
-        self.connection = sqlite3.connect(os.path.join(os.path.dirname(__file__), self.db_name), check_same_thread=False)
+        self.db_name = os.environ.get("DB_NAME")
+        self.connection = sqlite3.connect(os.path.join(os.path.dirname(__file__), '..', self.db_name), check_same_thread=False)
         self.cursor = self.connection.cursor()
         
     def check_if_exists(self):
@@ -17,11 +17,12 @@ class Database:
     
     def create_tables(self):
         self.cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Usuario (
+        CREATE TABLE IF NOT EXISTS User (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
             email TEXT NOT NULL,
-            rol TEXT NOT NULL
+            password TEXT NOT NULL,
+            admin BOOLEAN DEFAULT 0
         )
         ''')
         
@@ -59,3 +60,7 @@ class Database:
         )
         ''')
         self.connection.commit()
+
+if __name__ == "__main__":
+    db = Database()
+    print(db.initialize())
