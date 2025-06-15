@@ -1,16 +1,18 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/home';
 import IniciarSesion from './pages/login';
-import Register from './pages/register';
+
+/* Rutas del usuario */
+import Home from './pages/user/home';
+import Perfil from './pages/user/perfil';
 
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/home" element={<Home />} />
+        <Route path="/perfil" element={<Perfil />} />
         <Route path="/" element={<IniciarSesion />} />
-        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );

@@ -26,14 +26,14 @@ const Login = () => {
       }}
     >
       <div
-        className="card shadow-lg p-4 rounded-4"
+        className="card shadow-lg p-4 rounded-4 border border-4 border-success border-opacity-75 login-glow"
         style={{
           width: '100%',
           maxWidth: '500px',
-          backgroundColor: '#93E495'
+          backgroundColor: '#93E495',
+          boxShadow: '0 0 32px 8px #25a366cc, 0 0 64px 16px #b9ffd6cc inset'
         }}
       >
-        {/* ✅ Títulos estilizados */}
         <h1
           className="text-center mb-2"
           style={{
@@ -51,12 +51,12 @@ const Login = () => {
             fontWeight: '500'
           }}
         >
-          Inicia sesión con tu cuenta
+          🔐 Inicia sesión con tu cuenta
         </h4>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Correo electrónico</label>
+            <label className="form-label">📧 Correo electrónico</label>
             <input
               type="email"
               className="form-control"
@@ -68,7 +68,7 @@ const Login = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="form-label">Contraseña</label>
+            <label className="form-label">🔑 Contraseña</label>
             <input
               type="password"
               className="form-control"
@@ -79,18 +79,20 @@ const Login = () => {
               required
             />
           </div>
-          <button type="submit" className="btn btn-success w-100">Entrar</button>
+          <Link type="submit" to="/home" className="btn btn-success w-100">Entrar</Link>
         </form>
-
-        <div className="text-center mt-3">
-          <p>
-            ¿No tienes cuenta?{' '}
-            <Link to="/register" className="text-decoration-none text-primary">
-              Regístrate
-            </Link>
-          </p>
-        </div>
       </div>
+      <style>{`
+        .login-glow {
+          box-shadow: 0 0 32px 8px #25a366cc, 0 0 64px 16px #b9ffd6cc inset !important;
+          border-color: #25a366 !important;
+          animation: loginGlowPulse 2s infinite alternate;
+        }
+        @keyframes loginGlowPulse {
+          0% { box-shadow: 0 0 32px 8px #25a366cc, 0 0 64px 16px #b9ffd6cc inset; }
+          100% { box-shadow: 0 0 48px 16px #25a366ee, 0 0 96px 32px #b9ffd6ee inset; }
+        }
+      `}</style>
     </div>
   );
 };
