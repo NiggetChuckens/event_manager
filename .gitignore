@@ -11,26 +11,21 @@ frontend.pnp.js
 /frontend/build
 
 # misc
+env/
 .vscode/
 frontend/.DS_Store
 frontend/.env.local
-frontend/.env.development.local
 frontend/.env.test.local
-frontend/.env.production.local
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
-
-.vscode/
-
-src/backend/db/eventos.db
-
-env/
-
+src/frontend/node_modules
 src/backend/db/__pycache__/
-src/backend/eventos.db
-.env
+frontend/.env.production.local
+frontend/.env.development.local
 
 # private files
 .env
 eventos.db
+src/backend/eventos.db
+src/backend/db/eventos.db
