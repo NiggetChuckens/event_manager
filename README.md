@@ -160,7 +160,7 @@ This project is licensed under the MIT License.
 # Event Manager Roadmap
 
 ## Version 1.0 - Core Event Management
-- [✔] Basic user authentication and authorization
+- [x] Basic user authentication and authorization
 - [ ] Event CRUD operations
   - [ ] Create event form with basic details (date, time, location)
   - [ ] Event listing and detail views
