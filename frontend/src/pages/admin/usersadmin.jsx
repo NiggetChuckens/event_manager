@@ -32,7 +32,6 @@ const AdminUsers = () => {
                 <button className="btn btn-sm btn-outline-danger">Eliminar</button>
               </td>
             </tr>
-            {/* Puedes mapear usuarios reales desde props o estado más adelante */}
           </tbody>
         </table>
       </div>

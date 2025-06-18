@@ -6,15 +6,17 @@ const CreateUser = () => {
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
-    password: ""
+    password: "",
+    admin: false, // false = usuario, true = admin
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    if (name === "admin") {
+      setFormData({ ...formData, admin: value === "true" }); 
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -64,9 +66,21 @@ const CreateUser = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-success">
-            Crear usuario
-          </button>
+          <div className="mb-3">
+            <label className="form-label">Rol</label>
+            <select
+              name="admin"
+              className="form-select"
+              value={formData.admin}
+              onChange={handleChange}
+              required
+            >
+              <option value="false">Usuario</option>
+              <option value="true">Administrador</option>
+            </select>
+          </div>
+
+          <button type="submit" className="btn btn-success">Crear usuario</button>
         </form>
       </div>
       <Footer />
