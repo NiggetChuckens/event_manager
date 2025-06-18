@@ -9,6 +9,7 @@ import Users from './pages/admin/usersadmin';
 import Stats from './pages/admin/stats';
 import CreateEvent from './pages/admin/createevent';
 import CreateUser from './pages/admin/createuser';
+import EditEvent from './pages/admin/editevent';
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/admin/stats" element={<Stats />} />
         <Route path="/create" element={<CreateEvent />} />
         <Route path="/createuser" element={<CreateUser />} />
+        <Route path="/admin/editevent/:id" element={<EditEvent />} />
       </Routes>
     </Router>
   );
