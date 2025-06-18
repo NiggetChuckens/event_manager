@@ -1,6 +1,23 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
 
-const Navbar = ({ userName = "Usuario" }) => {
+const Navbar = () => {
+  const [userName, setUserName] = useState('Guest');
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserName(decoded.username || 'Guest');
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        setUserName('Guest');
+      }
+    }
+  }, []);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-success px-4">
       <div className="container-fluid align-items-center">

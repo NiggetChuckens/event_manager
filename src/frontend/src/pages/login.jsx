@@ -1,19 +1,28 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../api/User_handler';
 
 const Login = () => {
   const [form, setForm] = useState({
     correo: '',
     contraseña: ''
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Inicio de sesión:', form);
+    const result = await loginUser(form.correo, form.contraseña);
+    if (result.success) {
+      localStorage.setItem('authToken', result.token);
+      navigate('/home');
+    } else {
+      console.error('Error en el inicio de sesión:', result.message);
+      alert(result.message);
+    }
   };
 
   return (
@@ -79,7 +88,7 @@ const Login = () => {
               required
             />
           </div>
-          <Link type="submit" to="/home" className="btn btn-success w-100">Entrar</Link>
+          <button type="submit" className="btn btn-success w-100">Entrar</button>
         </form>
       </div>
       <style>{`

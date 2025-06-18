@@ -1,14 +1,16 @@
 import os, sys, flask 
 from flask import request, jsonify
+from flask_cors import CORS
 
 # Ensure the db and functions directory is in the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'db')); sys.path.append(os.path.join(os.path.dirname(__file__), 'functions'))
 
 from db_init import Database
-from user_magnament import signup_user, login_user, delete_user
+from user_magnament import signup_user, login_user, delete_user, get_user_details_by_token
 
 db = Database()
 app = flask.Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def index():
@@ -50,6 +52,16 @@ def delete_user_api():
         return jsonify({"success": False, "message": "Admin email and target email are required"}), 400
 
     result = delete_user(admin_email, target_email)
+    return jsonify(result)
+
+@app.route("/user-details", methods=["GET"])
+def user_details():
+    token = request.headers.get("Authorization")
+    if not token:
+        return jsonify({"success": False, "message": "Token is required"}), 400
+
+    token = token.replace("Bearer ", "")
+    result = get_user_details_by_token(token)
     return jsonify(result)
 
 if __name__ == '__main__':
