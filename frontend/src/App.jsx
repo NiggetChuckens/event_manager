@@ -8,6 +8,7 @@ import Events from './pages/admin/eventsadmi';
 import Users from './pages/admin/usersadmin';
 import Stats from './pages/admin/stats';
 import CreateEvent from './pages/admin/createevent';
+import CreateUser from './pages/admin/createuser';
 
 const App = () => {
   return (
@@ -21,7 +22,7 @@ const App = () => {
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/stats" element={<Stats />} />
         <Route path="/create" element={<CreateEvent />} />
-      
+        <Route path="/createuser" element={<CreateUser />} />
       </Routes>
     </Router>
   );
