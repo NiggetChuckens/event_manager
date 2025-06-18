@@ -1,8 +1,9 @@
 # dependencies
 env/
-/frontend/node_modules
 /frontend/.pnp
 frontend.pnp.js
+src/frontend/node_modules
+src/frontend/node_modules/*
 
 # testing
 /frontend/coverage
@@ -19,7 +20,6 @@ frontend/.env.test.local
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
-src/frontend/node_modules
 src/backend/db/__pycache__/
 frontend/.env.production.local
 frontend/.env.development.local
@@ -29,3 +29,26 @@ frontend/.env.development.local
 eventos.db
 src/backend/eventos.db
 src/backend/db/eventos.db
+src/frontend/node_modules/.cache/.eslintcache
+src/frontend/node_modules/.package-lock.json
+src/frontend/node_modules/.cache/.eslintcache
+src/frontend/node_modules/.cache/default-development/0.pack
+src/frontend/node_modules/.cache/default-development/1.pack
+src/frontend/node_modules/.cache/default-development/2.pack
+src/frontend/node_modules/.cache/default-development/3.pack
+src/frontend/node_modules/.cache/default-development/4.pack
+src/frontend/node_modules/.cache/default-development/5.pack
+src/frontend/node_modules/.cache/default-development/5.pack_
+src/frontend/node_modules/.cache/default-development/6.pack
+src/frontend/node_modules/.cache/default-development/7.pack
+src/frontend/node_modules/.cache/default-development/7.pack_
+src/frontend/node_modules/.cache/default-development/8.pack
+src/frontend/node_modules/.cache/default-development/9.pack
+src/frontend/node_modules/.cache/default-development/10.pack
+src/frontend/node_modules/.cache/default-development/11.pack
+src/frontend/node_modules/.cache/default-development/12.pack
+src/frontend/node_modules/.cache/default-development/13.pack
+src/frontend/node_modules/.cache/default-development/14.pack
+src/frontend/node_modules/.cache/default-development/index.pack
+src/frontend/node_modules/.cache/default-development/index.pack_
+src/frontend/node_modules/.cache/default-development/index.pack.old
