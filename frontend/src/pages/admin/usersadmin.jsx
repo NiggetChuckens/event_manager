@@ -2,8 +2,12 @@ import Footer from "../../components/footer";
 import NavbarAdmin from "../../components/navbaradmin";
 import { Link } from 'react-router-dom';
 
-
 const AdminUsers = () => {
+  const users = [
+    { id: 1, name: 'María López', email: 'maria@example.com', role: 'Usuario' },
+    { id: 2, name: 'Pedro Torres', email: 'pedro@example.com', role: 'Administrador' },
+  ];
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <NavbarAdmin />
@@ -23,15 +27,22 @@ const AdminUsers = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>María López</td>
-              <td>maria@example.com</td>
-              <td>Usuario</td>
-              <td>
-                <button className="btn btn-sm btn-outline-warning me-2">Cambiar rol</button>
-                <button className="btn btn-sm btn-outline-danger">Eliminar</button>
-              </td>
-            </tr>
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+                <td>{user.role}</td>
+                <td>
+                  <Link
+                    to={`/admin/edituser/${user.id}`}
+                    className="btn btn-sm btn-outline-warning me-2"
+                  >
+                    Editar
+                  </Link>
+                  <button className="btn btn-sm btn-outline-danger">Eliminar</button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
