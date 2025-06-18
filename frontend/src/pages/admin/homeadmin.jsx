@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
-import Footer from '../components/footer';
+import Footer from '../../components/footer';
+import NavbarAdmin from '../../components/navbaradmin';
 
 const AdminHome = () => {
   return (
-    <>
-    <div className="container py-5">
+    <div className="d-flex flex-column min-vh-100">
+    <NavbarAdmin />
+    <div className="container py-5 flex-grow-1">
       <div className="bg-white p-5 rounded-4 shadow">
         <h1 className="display-5 fw-bold text-dark">Panel de Administración</h1>
         <p className="lead text-muted">
@@ -45,7 +47,7 @@ const AdminHome = () => {
       </div>
     </div>
     <Footer />
-    </>
+    </div>
   );
 };
 

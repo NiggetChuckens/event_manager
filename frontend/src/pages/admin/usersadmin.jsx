@@ -1,7 +1,9 @@
-// src/pages/AdminUsers.jsx
-
+import Footer from "../../components/footer";
+import NavbarAdmin from "../../components/navbaradmin";
 const AdminUsers = () => {
   return (
+    <div className="d-flex flex-column min-vh-100">
+    <NavbarAdmin />
     <div className="container py-5">
       <h2 className="mb-4">👥 Gestión de Usuarios</h2>
       <table className="table table-hover">
@@ -26,6 +28,8 @@ const AdminUsers = () => {
           {/* Más usuarios */}
         </tbody>
       </table>
+    </div>
+    <Footer />
     </div>
   );
 };
