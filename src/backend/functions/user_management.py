@@ -20,6 +20,22 @@ def signup_user(nombre, email, password, rol=0):
 
     return {"success": True, "message": "User signed up successfully"}
 
+def signup_mod(nombre, email, password, rol=0):
+    connection = sqlite3.connect(DATABASE)
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM User WHERE email = ?", (email,))
+    if cursor.fetchone():
+        connection.close()
+        return {"success": False, "message": "Email already exists"}
+
+    hashed_password = generate_password_hash(password)
+    cursor.execute("INSERT INTO User (nombre, email, password, admin) VALUES (?, ?, ?, ?)", (nombre, email, hashed_password, rol))
+    connection.commit()
+    connection.close()
+
+    return {"success": True, "message": "User signed up successfully"}
+
 def signup_admin(nombre, email, password, rol=1):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()

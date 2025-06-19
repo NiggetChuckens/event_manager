@@ -6,7 +6,7 @@ from flask_cors import CORS
 sys.path.append(os.path.join(os.path.dirname(__file__), 'db')); sys.path.append(os.path.join(os.path.dirname(__file__), 'functions'))
 
 from db_init import Database
-from user_magnament import signup_user, login_user, delete_user, get_user_details_by_token
+from user_management import signup_user, login_user, delete_user, get_user_details_by_token
 
 db = Database()
 app = flask.Flask(__name__)

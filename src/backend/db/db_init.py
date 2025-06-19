@@ -28,7 +28,7 @@ class Database:
         
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS Evento (
-            id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
             descripcion TEXT,
             fecha_inicio DATETIME NOT NULL,

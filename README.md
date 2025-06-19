@@ -162,7 +162,7 @@ This project is licensed under the MIT License.
 ## Version 1.0 - Core Event Management
 - [x] Basic user authentication and authorization
 - [ ] Event CRUD operations
-  - [ ] Create event form with basic details (date, time, location)
+  - [x] Create event form with basic details (date, time, location)
   - [ ] Event listing and detail views
   - [ ] Event editing interface
   - [ ] Event deletion with confirmation
