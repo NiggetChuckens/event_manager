@@ -128,5 +128,9 @@ def pending_events():
     events = get_pending_events(user_id)
     return jsonify({'success': True, 'events': events})
 
+# New Endpoints Added:
+# - /pending_events: Fetches pending events for a user based on their token.
+# - /eventos-proximos: Fetches upcoming events.
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

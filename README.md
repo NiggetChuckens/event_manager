@@ -114,27 +114,68 @@ Event Manager is a React-based web application designed to streamline the proces
 Here's an updated overview of the project structure:
 ```
 event_manager/
-├── backend/
-│   ├── main.py
-│   ├── db/
-│   │   ├── db_init.py
-│   ├── functions/
-│   │   ├── user_magnament.py
-├── frontend/
-│   ├── public/
-│   │   ├── index.html
-│   │   ├── logo192.png
-│   │   ├── logo512.png
-│   │   ├── manifest.json
-│   │   └── favicon.ico
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── index.js
-│   │   ├── index.css
-│   │   ├── reportWebVitals.js
-│   │   └── pages/
+├── LICENSE
 ├── README.md
-└── requirements.txt
+├── requirements.txt
+├── src/
+│   ├── backend/
+│   │   ├── Dockerfile
+│   │   ├── eventos.db
+│   │   ├── main.py
+│   │   ├── db/
+│   │   │   └── db_init.py
+│   │   ├── functions/
+│   │   │   ├── event_management.py
+│   │   │   └── user_management.py
+│   ├── frontend/
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   ├── package-lock.json
+│   │   ├── public/
+│   │   │   ├── favicon.ico
+│   │   │   ├── index.html
+│   │   │   ├── logo192.png
+│   │   │   ├── logo512.png
+│   │   │   ├── manifest.json
+│   │   │   └── robots.txt
+│   │   ├── src/
+│   │   │   ├── App.jsx
+│   │   │   ├── index.css
+│   │   │   ├── index.js
+│   │   │   ├── reportWebVitals.js
+│   │   │   ├── api/
+│   │   │   │   ├── Login_handler.ts
+│   │   │   │   ├── admin/
+│   │   │   │   ├── user/
+│   │   │   │   │   ├── fetchEvents.ts
+│   │   │   │   │   ├── fetchPendingEvents.ts
+│   │   │   │   │   └── validateToken.ts
+│   │   │   ├── components/
+│   │   │   │   ├── admin/
+│   │   │   │   │   └── navbar.jsx
+│   │   │   │   ├── common/
+│   │   │   │   │   ├── editProfile.jsx
+│   │   │   │   │   ├── eventsConfirmed.jsx
+│   │   │   │   │   ├── eventsNotConfirmed.jsx
+│   │   │   │   │   ├── footer.jsx
+│   │   │   │   │   └── navbar.jsx
+│   │   │   ├── pages/
+│   │   │   │   ├── login.jsx
+│   │   │   │   ├── admin/
+│   │   │   │   │   ├── create/
+|   |   |   |   |   |   ├── event.jsx
+|   |   |   |   |   |   ├── user.jsx
+│   │   │   │   │   ├── edit/
+|   |   |   |   |   |   ├── event.jsx
+|   |   |   |   |   |   ├── user.jsx
+│   │   │   │   │   ├── events.jsx
+│   │   │   │   │   ├── home.jsx
+│   │   │   │   │   ├── stats.jsx
+│   │   │   │   │   └── users-panel.jsx
+│   │   │   │   └── user/
+│   │   │   │   │   ├── home.jsx
+│   │   │   │   │   └── perfil.jsx
+
 ```
 
 ## Getting Started
@@ -166,7 +207,12 @@ This project is licensed under the MIT License.
   - [ ] Event listing and detail views
   - [ ] Event editing interface
   - [ ] Event deletion with confirmation
-- [ ] Responsive design implementation
+- [x] User CRUD operations
+  - [x] Create User form with basic details
+  - [x] User listing
+  - [x] User editing interface
+  - [x] User deletion with confirmation
+- [x] Responsive design implementation
 
 ## Version 1.1 - Enhanced Event Features
 - [ ] Advanced event details
