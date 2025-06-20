@@ -2,19 +2,31 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/common/navbar';
 import Footer from '../../components/common/footer';
-import EvConfirmados from '../../components/user/EvConfirmados';
-import EvSinConfirmar from '../../components/user/EvSinConfirmar';
+import EventsConfirmed from '../../components/common/eventsConfirmed';
+import EventsNotConfirmed from '../../components/common/eventsNotConfirmed';
+import { fetchEvents } from '../../api/user/fetchEvents';
+import { validateUserToken } from '../../api/user/validateToken'
+import { fetchPendingEvents } from '../../api/user/fetchPendingEvents';
 
 const Home = () => {
   const [eventos, setEventos] = useState([]);
+  const [pendingEvents, setPendingEvents] = useState([]);
   const [showConfirmados, setShowConfirmados] = useState(false);
   const [showSinConfirmar, setShowSinConfirmar] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/eventos-proximos')
-      .then(res => res.json())
-      .then(data => setEventos(data.eventos || []))
-      .catch(() => setEventos([]));
+    fetchEvents(setEventos);
+  }, []);
+
+  useEffect(() => {
+    validateUserToken();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      fetchPendingEvents(token, setPendingEvents);
+    }
   }, []);
 
   const usuarioId = 1;
@@ -56,11 +68,27 @@ const Home = () => {
                   </ul>
                 </div>
               </div>
+              <div className="col-12 col-md-6">
+                <div className="bg-white bg-opacity-75 p-4 rounded-4 shadow border border-success h-100">
+                  <h3 className="text-success mb-4">⏳ Eventos pendientes</h3>
+                  <ul className="list-group list-group-flush mt-3">
+                    {pendingEvents.length === 0 ? (
+                      <li className="list-group-item text-muted">No hay eventos pendientes.</li>
+                    ) : (
+                      pendingEvents.map((ev, i) => (
+                        <li className="list-group-item" key={i}>
+                          📅 {ev.nombre} - {ev.fecha_inicio}
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        {showConfirmados && (<EvConfirmados usuarioId={usuarioId} onClose={() => setShowConfirmados(false)} />)}
-        {showSinConfirmar && (<EvSinConfirmar usuarioId={usuarioId} onClose={() => setShowSinConfirmar(false)} />)}
+        {showConfirmados && (<EventsConfirmed usuarioId={usuarioId} onClose={() => setShowConfirmados(false)} />)}
+        {showSinConfirmar && (<EventsNotConfirmed usuarioId={usuarioId} onClose={() => setShowSinConfirmar(false)} />)}
         <Footer />
       </div>
     </>

@@ -1,18 +1,34 @@
 import { useEffect, useState } from 'react';
 
-const EvConfirmados = ({ usuarioId, onClose }) => {
+const EventsConfirmed = ({ usuarioId, onClose }) => {
     const [eventos, setEventos] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/eventos-confirmados?usuario_id=${usuarioId}`)
-            .then(res => res.json())
-            .then(data => {
+        const fetchConfirmedEvents = async () => {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    console.error('No token found');
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:5000/eventos-confirmados?usuario_id=${usuarioId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const data = await response.json();
                 setEventos(data.eventos || []);
                 setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, [usuarioId]);
+            } catch (error) {
+                console.error('Error fetching confirmed events:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchConfirmedEvents();
+    }, []);
 
     const cancelarAsistencia = (eventoId) => {
         setEventos(eventos.filter(ev => ev.id !== eventoId));
@@ -50,4 +66,4 @@ const EvConfirmados = ({ usuarioId, onClose }) => {
     );
 };
 
-export default EvConfirmados;
+export default EventsConfirmed;

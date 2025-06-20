@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const EditarPerfil = ({ usuario, onClose, onUpdate }) => {
+const EditProfile = ({ usuario, onClose, onUpdate }) => {
     const [form, setForm] = useState({
         nombre: usuario?.nombre || '',
         correo: usuario?.correo || '',
@@ -70,4 +70,4 @@ const EditarPerfil = ({ usuario, onClose, onUpdate }) => {
     );
 };
 
-export default EditarPerfil;
+export default EditProfile;

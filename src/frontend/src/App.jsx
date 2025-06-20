@@ -1,37 +1,75 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import IniciarSesion from './pages/login';
 import Register from './pages/register';
-import HomeAdmin from './pages/admin/homeadmin';
-import Events from './pages/admin/eventsadmi';
-import Users from './pages/admin/usersadmin';
-import Stats from './pages/admin/stats';
-import CreateEvent from './pages/admin/createevent';
-import CreateUser from './pages/admin/createuser';
-import EditEvent from './pages/admin/editevent';
-import EditUser from './pages/admin/edituser';
+import HomeAdmin from './pages/admin/home';
+import Events from './pages/admin/events';
+import Users from './pages/admin/users-panel';
+import CreateEvent from './pages/admin/create/event';
+import CreateUser from './pages/admin/create/user';
+import EditEvent from './pages/admin/edit/event';
+import EditUser from './pages/admin/edit/user';
 import Home from './pages/user/home';
 import Perfil from './pages/user/perfil';
+import Stats from './pages/admin/stats';
+import { validateToken } from './api/admin/validateToken';
 
 const App = () => {
+  const checkSessionValidity = async () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userType');
+      window.location.href = '/';
+      return;
+    }
+
+    try {
+      const response = await validateToken(token);
+      if (!response.success) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userType');
+        window.location.href = '/';
+      }
+    } catch (error) {
+      console.error('Error validating token:', error);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userType');
+      window.location.href = '/';
+    }
+  };
+
+  const handleRedirect = (path) => {
+    checkSessionValidity();
+    window.location.href = path;
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      const redirectPath = localStorage.getItem('redirectPath') || '/home';
+      handleRedirect(redirectPath);
+    }
+  }, []);
+
   return (
     <Router>
       <Routes>
-        // Default route
+        {/* Default route */}
         <Route path="/" element={<IniciarSesion />} />
 
-        // User routes
+        {/* User routes */}
         <Route path="/home" element={<Home />} />
         <Route path="/perfil" element={<Perfil />} />
 
-        // Admin routes
+        {/* Admin routes */}
         <Route path="/admin/home" element={<HomeAdmin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/stats" element={<Stats />} />
         <Route path="/admin/events" element={<Events />} />
-        <Route path="/create-user" element={<CreateUser />} />
-        <Route path="/create-event" element={<CreateEvent />} />
+        <Route path="/admin/create-user" element={<CreateUser />} />
+        <Route path="/admin/create-event" element={<CreateEvent />} />
         <Route path="/admin/edit-user/:id" element={<EditUser />} />
         <Route path="/admin/edit-event/:id" element={<EditEvent />} />
       </Routes>

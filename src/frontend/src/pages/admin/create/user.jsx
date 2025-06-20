@@ -1,27 +1,49 @@
 import { useState } from "react";
-import Footer from '../../components/common/footer';
-import NavbarAdmin from '../../components/admin/navbaradmin';
+import Footer from '../../../components/common/footer';
+import NavbarAdmin from '../../../components/admin/navbar';
+import { createUser } from '../../../api/admin/createUser';
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
     password: "",
-    admin: false, // false = usuario, true = admin
+    admin: false, 
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "admin") {
-      setFormData({ ...formData, admin: value === "true" }); 
+      setFormData({ ...formData, admin: value }); 
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Usuario enviado:", formData);
+    const token = localStorage.getItem('authToken');
+    const decodedToken = jwtDecode(token);
+    const adminEmail = decodedToken.email;
+
+    try {
+      const response = await createUser(
+        formData.nombre,
+        formData.email,
+        formData.password,
+        formData.admin,
+        adminEmail
+      );
+      alert(response.message);
+      navigate('/admin/users');
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("Failed to create user. Please try again.");
+    }
   };
 
   return (
@@ -75,8 +97,9 @@ const CreateUser = () => {
               onChange={handleChange}
               required
             >
-              <option value="false">Usuario</option>
-              <option value="true">Administrador</option>
+              <option value="user">Usuario</option>
+              <option value="moderator">Moderator</option>
+              <option value="admin">Administrador</option>
             </select>
           </div>
 

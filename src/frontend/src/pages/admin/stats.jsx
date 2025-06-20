@@ -35,3 +35,5 @@ const AdminStats = () => {
 };
 
 export default AdminStats;
+
+// No route changes needed for this page as it does not contain navigation links.

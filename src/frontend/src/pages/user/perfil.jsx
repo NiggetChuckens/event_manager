@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../../components/common/navbar';
 import Footer from '../../components/common/footer';
-import EditarPerfil from '../../components/user/Editarperfil';
+import editProfile from '../../components/common/editProfile';
 
 const Perfil = () => {
     const [usuario, setUsuario] = useState(null);
@@ -52,7 +52,7 @@ const Perfil = () => {
         </div>
         
         {showModal && (
-            <EditarPerfil usuario={usuario} onClose={() => setShowModal(false)} onUpdate={setUsuario} />
+            <editProfile usuario={usuario} onClose={() => setShowModal(false)} onUpdate={setUsuario} />
         )}
         <Footer />
         </>

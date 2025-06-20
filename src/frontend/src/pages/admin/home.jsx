@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import Footer from '../../components/common/footer';
-import NavbarAdmin from '../../components/admin/navbaradmin';
+import NavbarAdmin from '../../components/admin/navbar';
 
 const AdminHome = () => {
   return (

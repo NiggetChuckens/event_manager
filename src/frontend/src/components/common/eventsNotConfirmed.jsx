@@ -1,18 +1,34 @@
 import { useEffect, useState } from 'react';
 
-const EvSinConfirmar = ({ usuarioId, onClose }) => {
+const EventsNotConfirmed = ({ usuarioId, onClose }) => {
     const [eventos, setEventos] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/eventos-sin-confirmar?usuario_id=${usuarioId}`)
-        .then(res => res.json())
-        .then(data => {
-            setEventos(data.eventos || []);
-            setLoading(false);
-        })
-        .catch(() => setLoading(false));
-    }, [usuarioId]);
+        const fetchPendingEvents = async () => {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    console.error('No token found');
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:5000/eventos-sin-confirmar?usuario_id=${usuarioId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const data = await response.json();
+                setEventos(data.eventos || []);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching pending events:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchPendingEvents();
+    }, []);
 
     const confirmarAsistencia = (eventoId) => {
         setEventos(eventos.filter(ev => ev.id !== eventoId));
@@ -54,4 +70,4 @@ const EvSinConfirmar = ({ usuarioId, onClose }) => {
     );
 };
 
-export default EvSinConfirmar;
+export default EventsNotConfirmed;

@@ -22,20 +22,38 @@ class Database:
             name TEXT NOT NULL,
             email TEXT NOT NULL,
             password TEXT NOT NULL,
-            user_role TEXT NOT NULL DEFAULT 'user'
+            user_role TEXT NOT NULL DEFAULT 'user',
+            created_by TEXT NOT NULL
+        )
+        ''')
+        
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Login (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            token TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES User(id)
         )
         ''')
         
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS Evento (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
+            titulo TEXT NOT NULL,
             descripcion TEXT,
             fecha_inicio DATETIME NOT NULL,
             fecha_fin DATETIME NOT NULL,
+            organizador TEXT NOT NULL,
             organizador_id INTEGER NOT NULL,
-            plataforma TEXT,
-            FOREIGN KEY (organizador_id) REFERENCES Usuario(id)
+            plataforma TEXT NOT NULL,
+            url TEXT NOT NULL,
+            asistencia INTEGER DEFAULT 0,
+            estado TEXT NOT NULL DEFAULT 'pendiente',
+            fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+            fecha_modificacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (organizador_id) REFERENCES User(id) ON DELETE SET NULL, 
+            FOREIGN KEY (organizador) REFERENCES User(name) ON DELETE SET NULL
         )
         ''')
         

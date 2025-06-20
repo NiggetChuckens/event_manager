@@ -1,12 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../../components/common/footer';
-import NavbarAdmin from '../../components/admin/navbaradmin';
+import NavbarAdmin from '../../components/admin/navbar';
 
 const AdminEvents = () => {
   const navigate = useNavigate();
 
   const handleEdit = (id) => {
-    navigate(`/admin/editevent/${id}`);
+    navigate(`/admin/edit-event/${id}`);
   };
 
   const handleDelete = (id) => {
@@ -27,7 +27,7 @@ const AdminEvents = () => {
         <h2 className="mb-4">📅 Gestión de Eventos</h2>
         <div className="d-flex justify-content-between mb-3">
           <span className="text-muted">Total de eventos: {eventos.length}</span>
-          <Link to="/create" className="btn btn-success">+ Crear nuevo evento</Link>
+          <Link to="/admin/create-event" className="btn btn-success">+ Crear nuevo evento</Link>
         </div>
 
         <ul className="list-group">

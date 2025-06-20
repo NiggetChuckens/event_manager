@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { loginUser } from '../api/User_handler';
+import { loginUser } from '../api/Login_handler';
 import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {

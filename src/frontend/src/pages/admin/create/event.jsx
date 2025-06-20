@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Footer from '../../components/common/footer';
-import Navbar from '../../components/admin/navbaradmin';
+import Footer from '../../../components/common/footer';
+import Navbar from '../../../components/admin/navbar';
 
 const CreateEvent = () => {
   const [formData, setFormData] = useState({
@@ -161,7 +161,7 @@ const CreateEvent = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary mt-3">Guardar Cambios</button>
+          <button type="submit" className="btn btn-primary mt-3">Guardar evento</button>
         </form>
       </div>
 

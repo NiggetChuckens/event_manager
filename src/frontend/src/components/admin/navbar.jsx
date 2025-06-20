@@ -32,7 +32,11 @@ const NavbarAdmin = () => {
               <Link className="nav-link" to="/admin/stats">📊 Estadísticas</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-danger" to="/logout">Cerrar sesión</Link>
+              <Link className="nav-link text-danger" onClick={() => {
+                      localStorage.removeItem('authToken');
+                      localStorage.removeItem('userType');
+                      window.location.href = '/';
+                    }}>🚪 Cerrar sesión</Link>
             </li>
           </ul>
         </div>
