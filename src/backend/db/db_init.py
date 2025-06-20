@@ -19,10 +19,10 @@ class Database:
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS User (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
+            name TEXT NOT NULL,
             email TEXT NOT NULL,
             password TEXT NOT NULL,
-            admin BOOLEAN DEFAULT 0
+            user_role TEXT NOT NULL DEFAULT 'user'
         )
         ''')
         
@@ -60,6 +60,7 @@ class Database:
         )
         ''')
         self.connection.commit()
+        self.connection.close()
 
 if __name__ == "__main__":
     db = Database()

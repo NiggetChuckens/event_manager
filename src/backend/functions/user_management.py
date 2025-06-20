@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 DATABASE = os.path.join(os.path.dirname(__file__), '..',os.environ.get("DB_NAME"))
 SECRET_KEY = os.environ.get("SECRET_KEY", "default_secret")
 
-def signup_user(nombre, email, password, rol=0):
+def signup_user(nombre, email, password):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -14,13 +14,13 @@ def signup_user(nombre, email, password, rol=0):
         return {"success": False, "message": "Email already exists"}
 
     hashed_password = generate_password_hash(password)
-    cursor.execute("INSERT INTO User (nombre, email, password, admin) VALUES (?, ?, ?, ?)", (nombre, email, hashed_password, rol))
+    cursor.execute("INSERT INTO User (name, email, password) VALUES (?, ?, ?)", (nombre, email, hashed_password))
     connection.commit()
     connection.close()
 
     return {"success": True, "message": "User signed up successfully"}
 
-def signup_mod(nombre, email, password, rol=0):
+def signup_mod(nombre, email, password, rol='moderator'):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -30,13 +30,13 @@ def signup_mod(nombre, email, password, rol=0):
         return {"success": False, "message": "Email already exists"}
 
     hashed_password = generate_password_hash(password)
-    cursor.execute("INSERT INTO User (nombre, email, password, admin) VALUES (?, ?, ?, ?)", (nombre, email, hashed_password, rol))
+    cursor.execute("INSERT INTO User (name, email, password, user_role) VALUES (?, ?, ?, ?)", (nombre, email, hashed_password, rol))
     connection.commit()
     connection.close()
 
     return {"success": True, "message": "User signed up successfully"}
 
-def signup_admin(nombre, email, password, rol=1):
+def signup_admin(nombre, email, password, rol='admin'):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -46,7 +46,7 @@ def signup_admin(nombre, email, password, rol=1):
         return {"success": False, "message": "Email already exists"}
 
     hashed_password = generate_password_hash(password)
-    cursor.execute("INSERT INTO User (nombre, email, password, admin) VALUES (?, ?, ?, ?)", (nombre, email, hashed_password, rol))
+    cursor.execute("INSERT INTO User (name, email, password, user_role) VALUES (?, ?, ?, ?)", (nombre, email, hashed_password, rol))
     connection.commit()
     connection.close()
 
@@ -56,31 +56,34 @@ def login_user(email, password):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT * FROM User WHERE email = ?", (email,))
+    cursor.execute("SELECT email, password, name, user_role FROM User WHERE email = ?", (email,))
     user = cursor.fetchone()
     connection.close()
 
     if not user:
         return {"success": False, "message": "Invalid email or password"}
 
-    stored_password = user[3]  
+    stored_password = user[1]  
     if not isinstance(stored_password, str):
         return {"success": False, "message": "Password format is invalid"}
 
     if not check_password_hash(stored_password, password):
         return {"success": False, "message": "Invalid email or password"}
-
-    token = jwt.encode({"email": email, "rol": user[4], "username": user[1]}, SECRET_KEY, algorithm="HS256")
-    return {"success": True, "message": "Login successful", "token": token}
+    
+    if user[3] not in ['user', 'moderator', 'admin']:
+        return {"success": False, "message": "Invalid user role"}
+    
+    token = jwt.encode({"email": email, "rol": user[3], "username": user[2]}, SECRET_KEY, algorithm="HS256")
+    return {"success": True, "user-type": user[3], "message": "Login successful", "token": token}
 
 def delete_user(admin_email, target_email):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT admin FROM User WHERE email = ?", (admin_email,))
+    cursor.execute("SELECT user_role FROM User WHERE email = ?", (admin_email,))
     admin_status = cursor.fetchone()
 
-    if not admin_status or admin_status[0] != 1:
+    if not admin_status or admin_status[0] != 'admin':
         connection.close()
         return {"success": False, "message": "Unauthorized: Only admins can delete users"}
 
@@ -106,7 +109,7 @@ def get_user_details_by_token(token):
     connection.close()
 
     if not user:
-        return {"success": False, "message": "Invalid token"}
+        return {"success": False,"message": "Invalid token"}
 
     return {"success": True, "username": user[1]}
 

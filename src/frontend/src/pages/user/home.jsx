@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from '../../components/navbar';
-import Footer from '../../components/footer';
+import Navbar from '../../components/common/navbar';
+import Footer from '../../components/common/footer';
 import EvConfirmados from '../../components/user/EvConfirmados';
 import EvSinConfirmar from '../../components/user/EvSinConfirmar';
 

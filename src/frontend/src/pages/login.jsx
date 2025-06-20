@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../api/User_handler';
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -17,8 +18,16 @@ const Login = () => {
     e.preventDefault();
     const result = await loginUser(form.correo, form.contraseña);
     if (result.success) {
-      localStorage.setItem('authToken', result.token);
-      navigate('/home');
+      const token = localStorage.getItem('authToken');
+      const decodedToken = jwtDecode(token);
+      const userType = decodedToken.rol; // Extract user type from token
+
+      // Redirect based on user type
+      if (userType === 'admin') {
+        navigate('/admin/home');
+      } else {
+        navigate('/home');
+      }
     } else {
       console.error('Error en el inicio de sesión:', result.message);
       alert(result.message);

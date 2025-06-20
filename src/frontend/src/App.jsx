@@ -10,23 +10,30 @@ import CreateEvent from './pages/admin/createevent';
 import CreateUser from './pages/admin/createuser';
 import EditEvent from './pages/admin/editevent';
 import EditUser from './pages/admin/edituser';
+import Home from './pages/user/home';
+import Perfil from './pages/user/perfil';
 
 const App = () => {
   return (
     <Router>
       <Routes>
+        // Default route
+        <Route path="/" element={<IniciarSesion />} />
+
+        // User routes
         <Route path="/home" element={<Home />} />
         <Route path="/perfil" element={<Perfil />} />
-        <Route path="/" element={<IniciarSesion />} />
+
+        // Admin routes
+        <Route path="/admin/home" element={<HomeAdmin />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/admin" element={<HomeAdmin />} />
-        <Route path="/admin/events" element={<Events />} />
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/stats" element={<Stats />} />
-        <Route path="/create" element={<CreateEvent />} />
-        <Route path="/createuser" element={<CreateUser />} />
-        <Route path="/admin/editevent/:id" element={<EditEvent />} />
-        <Route path="/admin/edituser/:id" element={<EditUser />} />
+        <Route path="/admin/events" element={<Events />} />
+        <Route path="/create-user" element={<CreateUser />} />
+        <Route path="/create-event" element={<CreateEvent />} />
+        <Route path="/admin/edit-user/:id" element={<EditUser />} />
+        <Route path="/admin/edit-event/:id" element={<EditEvent />} />
       </Routes>
     </Router>
   );

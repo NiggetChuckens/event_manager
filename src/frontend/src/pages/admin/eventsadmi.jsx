@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import Footer from '../../components/footer';
-import NavbarAdmin from '../../components/navbaradmin';
+import Footer from '../../components/common/footer';
+import NavbarAdmin from '../../components/admin/navbaradmin';
 
 const AdminEvents = () => {
   const navigate = useNavigate();

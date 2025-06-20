@@ -1,5 +1,5 @@
-import Footer from "../../components/footer";
-import NavbarAdmin from "../../components/navbaradmin";
+import Footer from '../../components/common/footer';
+import NavbarAdmin from '../../components/admin/navbaradmin';
 import { Link } from 'react-router-dom';
 
 const AdminUsers = () => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import Footer from '../../components/footer';
-import NavbarAdmin from '../../components/navbaradmin';
+import Footer from '../../components/common/footer';
+import NavbarAdmin from '../../components/admin/navbaradmin';
 
 const EditUserPage = () => {
   const { id } = useParams();

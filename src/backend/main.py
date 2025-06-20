@@ -8,27 +8,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'db')); sys.path.append(
 from db_init import Database
 from user_management import signup_user, login_user, delete_user, get_user_details_by_token
 
-db = Database()
+db = Database().initialize()
 app = flask.Flask(__name__)
 CORS(app)
-
-@app.route('/')
-def index():
-    return f"{db.initialize()}"
-
-@app.route("/signup", methods=["POST"])
-def signup():
-    data = request.json
-    nombre = data.get("nombre")
-    email = data.get("email")
-    password = data.get("password")
-    rol = data.get("rol", "user")
-
-    if not nombre or not email or not password:
-        return jsonify({"success": False, "message": "Name, email, and password are required"}), 400
-
-    result = signup_user(nombre, email, password, rol)
-    return jsonify(result)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -65,4 +47,4 @@ def user_details():
     return jsonify(result)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

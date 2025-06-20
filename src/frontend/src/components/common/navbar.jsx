@@ -34,7 +34,11 @@ const Navbar = () => {
             <li><Link className="dropdown-item text-white dropdown-item-green-hover" to="/home">🏠 Inicio</Link></li>
             <li><Link className="dropdown-item text-white dropdown-item-green-hover" to="/perfil">👤 Mi perfil</Link></li>
             <li><hr className="dropdown-divider bg-light" /></li>
-            <li><Link className="dropdown-item text-danger fw-bold" to="/">🚪 Cerrar sesión</Link></li>
+            <li><Link className="dropdown-item text-danger fw-bold" onClick={() => {
+                      localStorage.removeItem('authToken');
+                      localStorage.removeItem('userType');
+                      window.location.href = '/';
+                    }}>🚪 Cerrar sesión</Link></li>
           </ul>
         </div>
       </div>

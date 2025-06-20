@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Footer from "../../components/footer";
-import NavbarAdmin from "../../components/navbaradmin";
+import Footer from '../../components/common/footer';
+import NavbarAdmin from '../../components/admin/navbaradmin';
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({

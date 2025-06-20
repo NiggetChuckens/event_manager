@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Footer from '../../components/footer';
-import Navbar from '../../components/navbaradmin';
+import Footer from '../../components/common/footer';
+import Navbar from '../../components/admin/navbaradmin';
 
 const CreateEvent = () => {
   const [formData, setFormData] = useState({
