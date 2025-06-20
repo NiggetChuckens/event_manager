@@ -20,6 +20,12 @@ DATABASE = os.path.join(os.path.dirname(__file__), '..', os.environ.get("DB_NAME
 """
 
 def fetch_eventos_proximos():
+    """
+    Fetch upcoming events from the database.
+
+    Returns:
+        dict: A dictionary with a success flag and a list of upcoming events. Each event includes 'id', 'nombre', and 'fecha_inicio'.
+    """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -35,6 +41,15 @@ def fetch_eventos_proximos():
     return {"success": True, "eventos": eventos_list}
 
 def get_pending_events(user_id):
+    """
+    Get pending events for a specific user.
+
+    Args:
+        user_id (int): The ID of the user for whom to fetch pending events.
+
+    Returns:
+        list: A list of pending events for the user.
+    """
     # Mock implementation, replace with actual database query
     pending_events = [
         {'nombre': 'Evento 1', 'fecha_inicio': '2025-06-21'},

@@ -39,15 +39,16 @@ Event Manager is a React-based web application designed to streamline the proces
 
 ## API Endpoints
 
-### `/signup`
+### `/create_user`
 - **Method**: POST
-- **Description**: Allows users to sign up.
+- **Description**: Allows administrators to create users.
 - **Request Body**:
   ```json
   {
     "nombre": "John Doe",
     "email": "john.doe@example.com",
     "password": "password123",
+    "admin_email": "john.doe_2@example.com",
     "rol": "user"
   }
   ```
@@ -55,7 +56,7 @@ Event Manager is a React-based web application designed to streamline the proces
   ```json
   {
     "success": true,
-    "message": "User signed up successfully"
+    "message": "User created successfully"
   }
   ```
 
@@ -90,6 +91,21 @@ Event Manager is a React-based web application designed to streamline the proces
     "message": "Login successful, rol: administrator"
   }
   ```
+- **Request Body**:
+  ```json
+  {
+    "email": "john.doe_3@example.com",
+    "password": "password123"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "message": "Login successful, rol: moderator"
+  }
+  ```
+
 
 ### `/delete_user`
 - **Method**: POST
@@ -106,6 +122,162 @@ Event Manager is a React-based web application designed to streamline the proces
   {
     "success": true,
     "message": "User deleted successfully"
+  }
+  ```
+
+### `/user-details`
+- **Method**: GET
+- **Description**: Fetches user details based on the provided token.
+- **Headers**:
+  ```json
+  {
+    "Authorization": "Bearer <token>"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "user": {
+      "id": "123",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "role": "user"
+    }
+  }
+  ```
+
+### `/validate_token`
+- **Method**: POST
+- **Description**: Validates the provided token.
+- **Request Body**:
+  ```json
+  {
+    "token": "<token>"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "message": "Token is valid"
+  }
+  ```
+
+### `/fetch_users`
+- **Method**: GET
+- **Description**: Fetches all users.
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "users": [
+      {
+        "id": "123",
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "role": "user"
+      },
+      {
+        "id": "124",
+        "name": "Jane Smith",
+        "email": "jane.smith@example.com",
+        "role": "admin"
+      }
+    ]
+  }
+  ```
+
+### `/get_user_by_id`
+- **Method**: GET
+- **Description**: Fetches user details by ID.
+- **Query Parameters**:
+  ```json
+  {
+    "id": "123"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "user": {
+      "id": "123",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "role": "user"
+    }
+  }
+  ```
+
+### `/update_user`
+- **Method**: POST
+- **Description**: Updates user details.
+- **Request Body**:
+  ```json
+  {
+    "id": "123",
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "role": "admin",
+    "admin_email": "admin@example.com"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "message": "User updated successfully"
+  }
+  ```
+
+### `/eventos-proximos`
+- **Method**: GET
+- **Description**: Fetches upcoming events.
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "events": [
+      {
+        "id": "1",
+        "name": "Event 1",
+        "date": "2025-06-21"
+      },
+      {
+        "id": "2",
+        "name": "Event 2",
+        "date": "2025-06-22"
+      }
+    ]
+  }
+  ```
+
+### `/pending_events`
+- **Method**: GET
+- **Description**: Fetches pending events for a user.
+- **Headers**:
+  ```json
+  {
+    "Authorization": "Bearer <token>"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "events": [
+      {
+        "id": "1",
+        "name": "Pending Event 1",
+        "date": "2025-06-23"
+      },
+      {
+        "id": "2",
+        "name": "Pending Event 2",
+        "date": "2025-06-24"
+      }
+    ]
   }
   ```
 

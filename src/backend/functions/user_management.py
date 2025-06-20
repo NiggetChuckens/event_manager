@@ -5,6 +5,19 @@ DATABASE = os.path.join(os.path.dirname(__file__), '..',os.environ.get("DB_NAME"
 SECRET_KEY = os.environ.get("SECRET_KEY", "default_secret")
 
 def create_user(name, email, password, admin_email, rol):
+    """
+    Creates a new user.
+    
+    Args:
+        name (str): Name of the user.
+        email (str): Email of the user.
+        password (str): Password for the user.
+        admin_email (str): Email of the admin creating the user.
+        rol (str): Role of the user ('user', 'moderator', 'admin').
+
+    Returns:
+        dict: Success or error message.
+    """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -24,6 +37,16 @@ def create_user(name, email, password, admin_email, rol):
     return {"success": True, "message": f"User '{name}' created successfully"}
 
 def login_user(email, password):
+    """
+    Logs in a user.
+    
+    Args:
+        email (str): Email of the user.
+        password (str): Password for the user.
+
+    Returns:
+        dict: Success message, user type, and token.
+    """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -58,6 +81,16 @@ def login_user(email, password):
     return {"success": True, "user-type": user[3], "message": "Login successful", "token": token}
 
 def delete_user(admin_email, target_email):
+    """
+    Deletes a user.
+    
+    Args:
+        admin_email (str): Email of the admin performing the deletion.
+        target_email (str): Email of the user to be deleted.
+
+    Returns:
+        dict: Success or error message.
+    """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -82,6 +115,15 @@ def delete_user(admin_email, target_email):
     return {"success": True, "message": "User deleted successfully"}
 
 def get_user_details_by_token(token):
+    """
+    Fetches user details by token.
+    
+    Args:
+        token (str): Authorization token.
+
+    Returns:
+        dict: User details or error message.
+    """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -95,6 +137,15 @@ def get_user_details_by_token(token):
     return {"success": True, "username": user[1]}
 
 def validate_token(token):
+    """
+    Validates a token.
+    
+    Args:
+        token (str): Authorization token.
+
+    Returns:
+        dict: Validation result.
+    """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -108,6 +159,12 @@ def validate_token(token):
     return {"success": True, "message": "Token is valid"}
 
 def fetch_all_users():
+    """
+    Fetches all users.
+    
+    Returns:
+        dict: List of users.
+    """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -123,6 +180,15 @@ def fetch_all_users():
     return {"success": True, "users": user_list}
 
 def get_user_details_by_id(user_id):
+    """
+    Fetches user details by ID.
+    
+    Args:
+        user_id (int): ID of the user.
+
+    Returns:
+        dict: User details or error message.
+    """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -142,6 +208,19 @@ def get_user_details_by_id(user_id):
     }
 
 def update_user(user_id, name, email, role, admin_email):
+    """
+    Updates user details.
+    
+    Args:
+        user_id (int): ID of the user.
+        name (str): Updated name of the user.
+        email (str): Updated email of the user.
+        role (str): Updated role of the user.
+        admin_email (str): Email of the admin performing the update.
+
+    Returns:
+        dict: Success or error message.
+    """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
