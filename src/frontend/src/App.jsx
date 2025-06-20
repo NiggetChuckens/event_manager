@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import IniciarSesion from './pages/login';
-import Register from './pages/register';
 import HomeAdmin from './pages/admin/home';
 import Events from './pages/admin/events';
 import Users from './pages/admin/users-panel';
@@ -64,7 +63,6 @@ const App = () => {
 
         {/* Admin routes */}
         <Route path="/admin/home" element={<HomeAdmin />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/stats" element={<Stats />} />
         <Route path="/admin/events" element={<Events />} />
