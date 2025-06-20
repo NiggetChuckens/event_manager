@@ -231,7 +231,7 @@ Event Manager is a React-based web application designed to streamline the proces
   }
   ```
 
-### `/eventos-proximos`
+### `/upcoming_events`
 - **Method**: GET
 - **Description**: Fetches upcoming events.
 - **Response**:
