@@ -36,7 +36,7 @@ def create_user_api():
     Returns:
         JSON response with success or error message.
     """
-    data = request.json
+    data = request.get_json()
     nombre = data.get("nombre")
     email = data.get("email")
     password = data.get("password")
@@ -60,7 +60,7 @@ def login():
     Returns:
         JSON response with success message and token.
     """
-    data = request.json
+    data = request.get_json()
     email = data.get("email")
     password = data.get("password")
 
@@ -81,7 +81,7 @@ def delete_user_api():
     Returns:
         JSON response with success or error message.
     """
-    data = request.json
+    data = request.get_json()
     admin_email = data.get("admin_email")
     target_email = data.get("target_email")
 
@@ -121,7 +121,7 @@ def validate_token_api():
     Returns:
         JSON response with validation result.
     """
-    data = request.json
+    data = request.get_json()
     token = data.get("token")
 
     if not token:
@@ -170,7 +170,7 @@ def update_user_api():
     Returns:
         JSON response with success or error message.
     """
-    data = request.json
+    data = request.get_json()
     user_id = data.get("id")
     name = data.get("name")
     email = data.get("email")
