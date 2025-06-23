@@ -17,7 +17,7 @@ CORS(app)
 ###################################################################################
 # User Management Endpoints
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET"])
 def home():
     create_user('John Doe', 'jd@test.com', 'password123', 'jd2@test.com', 'user')
     create_user('John Doe 2', 'jd2@test.com', 'password123', 'None', 'admin')
