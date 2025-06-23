@@ -9,6 +9,7 @@ import { validateUserToken } from '../../api/user/validateToken'
 import { fetchPendingEvents } from '../../api/user/fetchPendingEvents';
 
 const Home = () => {
+  
   const [eventos, setEventos] = useState([]);
   const [pendingEvents, setPendingEvents] = useState([]);
   const [showConfirmados, setShowConfirmados] = useState(false);
@@ -30,6 +31,7 @@ const Home = () => {
   }, []);
 
   const usuarioId = 1;
+  
 
   return (
     <>

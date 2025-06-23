@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../apiRoute';
 
 export const fetchUserById = async (id: string, token: string): Promise<{ success: boolean; name: string; email: string; role: string; message?: string }> => {
   try {

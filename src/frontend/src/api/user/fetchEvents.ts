@@ -1,6 +1,8 @@
+import { API_BASE_URL } from '../apiRoute';
+
 export const fetchEvents = async (setEventos: Function) => {
   try {
-    const response = await fetch('http://localhost:5000/eventos-proximos');
+    const response = await fetch(API_BASE_URL);
     const data = await response.json();
     setEventos(data.eventos || []);
   } catch (error) {
