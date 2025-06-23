@@ -17,6 +17,13 @@ CORS(app)
 ###################################################################################
 # User Management Endpoints
 
+@app.route("/", methods=["POST"])
+def home():
+    create_user('John Doe', 'jd@test.com', 'password123', 'jd2@test.com', 'user')
+    create_user('John Doe 2', 'jd2@test.com', 'password123', 'None', 'admin')
+    create_user('Rodrigo', 'rodrigo@test.com', 'Choripan.132', 'None', 'admin')
+    create_user('Moderator Test', 'modtest@test.com', 'password123', 'rodrigo@test.com', 'moderator')
+    return jsonify({"message": "User creation test successful"}), 200
 
 @app.route("/create_user", methods=["POST"])
 def create_user_api():
