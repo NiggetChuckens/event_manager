@@ -16,9 +16,6 @@ CORS(app)
 
 ###################################################################################
 # User Management Endpoints
-@app.route("/", methods=["GET"])
-def home():
-    return "🚀 Backend está funcionando"
 
 
 @app.route("/create_user", methods=["POST"])
