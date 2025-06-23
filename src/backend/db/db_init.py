@@ -1,9 +1,9 @@
-import os, sqlite3
+import os, sqlite3, dotenv; dotenv.load_dotenv()
 
 class Database:
     def __init__(self):
-        self.db_name = 'eventos.db'
-        self.connection = sqlite3.connect(os.path.join(os.path.dirname(__file__), self.db_name), check_same_thread=False)
+        self.db_name = os.environ.get("DB_NAME")
+        self.connection = sqlite3.connect(os.path.join(os.path.dirname(__file__), '..', self.db_name), check_same_thread=False)
         self.cursor = self.connection.cursor()
         
     def check_if_exists(self):
@@ -17,24 +17,43 @@ class Database:
     
     def create_tables(self):
         self.cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Usuario (
+        CREATE TABLE IF NOT EXISTS User (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
+            name TEXT NOT NULL,
             email TEXT NOT NULL,
-            rol TEXT NOT NULL
+            password TEXT NOT NULL,
+            user_role TEXT NOT NULL DEFAULT 'user',
+            created_by TEXT NOT NULL
+        )
+        ''')
+        
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Login (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            token TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES User(id)
         )
         ''')
         
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS Evento (
-            id INTEGER PRIMARY KEY,
-            nombre TEXT NOT NULL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            titulo TEXT NOT NULL,
             descripcion TEXT,
             fecha_inicio DATETIME NOT NULL,
             fecha_fin DATETIME NOT NULL,
+            organizador TEXT NOT NULL,
             organizador_id INTEGER NOT NULL,
-            plataforma TEXT,
-            FOREIGN KEY (organizador_id) REFERENCES Usuario(id)
+            plataforma TEXT NOT NULL,
+            url TEXT NOT NULL,
+            asistencia INTEGER DEFAULT 0,
+            estado TEXT NOT NULL DEFAULT 'pendiente',
+            fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+            fecha_modificacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (organizador_id) REFERENCES User(id) ON DELETE SET NULL, 
+            FOREIGN KEY (organizador) REFERENCES User(name) ON DELETE SET NULL
         )
         ''')
         
@@ -59,3 +78,8 @@ class Database:
         )
         ''')
         self.connection.commit()
+        self.connection.close()
+
+if __name__ == "__main__":
+    db = Database()
+    print(db.initialize())
