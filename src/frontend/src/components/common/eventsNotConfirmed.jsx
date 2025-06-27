@@ -5,6 +5,17 @@ const EventsNotConfirmed = ({ usuarioId, onClose }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Simulación de eventos pendientes/cancelados para pruebas visuales
+        setTimeout(() => {
+            setEventos([
+                { id: 10, nombre: 'Taller de marketing', fecha: '2025-07-20', estado: 'pendiente', descripcion: 'Aprende estrategias de marketing digital.' },
+                { id: 11, nombre: 'Informacion', fecha: '2025-07-25', estado: 'cancelada', descripcion: 'Sesión informativa sobre nuevos proyectos.' },
+                { id: 12, nombre: 'Marketing 2', fecha: '2025-08-05', estado: 'pendiente', descripcion: 'Segunda parte del taller de marketing.' },
+            ]);
+            setLoading(false);
+        }, 500);
+        // Para datos real, descomentar lo siguiente:
+        /*
         const fetchPendingEvents = async () => {
             try {
                 const token = localStorage.getItem('authToken');
@@ -28,6 +39,7 @@ const EventsNotConfirmed = ({ usuarioId, onClose }) => {
         };
 
         fetchPendingEvents();
+        */
     }, []);
 
     const confirmarAsistencia = (eventoId) => {
@@ -50,12 +62,13 @@ const EventsNotConfirmed = ({ usuarioId, onClose }) => {
                         ) : (
                         <ul className="list-group">
                             {eventos.map(ev => (
-                            <li className="list-group-item d-flex justify-content-between align-items-center" key={ev.id}>
-                                <span>
-                                {ev.estado === 'pendiente' ? '⏳' : '❌'} {ev.nombre} <span className="text-muted">({ev.fecha})</span>
-                                </span>
+                            <li className="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center" key={ev.id}>
+                                <div>
+                                    <span>{ev.estado === 'pendiente' ? '⏳' : '❌'} <strong>{ev.nombre}</strong> <span className="text-muted">({ev.fecha})</span></span>
+                                    <div className="text-muted small mt-1">{ev.descripcion}</div>
+                                </div>
                                 {['pendiente', 'cancelada'].includes(ev.estado) && (
-                                <button className="btn btn-success btn-sm" onClick={() => confirmarAsistencia(ev.id)}>
+                                <button className="btn btn-success btn-sm mt-2 mt-md-0" onClick={() => confirmarAsistencia(ev.id)}>
                                     Confirmar asistencia
                                 </button>
                                 )}

@@ -5,6 +5,17 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Simulación de eventos confirmados para pruebas visuales
+        setTimeout(() => {
+            setEventos([
+                { id: 1, nombre: 'Reunion mensual', fecha: '2025-07-10', descripcion: 'Reunión de seguimiento mensual con el equipo.' },
+                { id: 2, nombre: 'Charla con lideres', fecha: '2025-07-15', descripcion: 'Charla inspiradora con líderes de la industria.' },
+                { id: 3, nombre: 'Marketing', fecha: '2025-08-01', descripcion: 'Taller práctico de marketing digital.' },
+            ]);
+            setLoading(false);
+        }, 500);
+        // Para datos reales, descomentar lo siguiente:
+        /*
         const fetchConfirmedEvents = async () => {
             try {
                 const token = localStorage.getItem('authToken');
@@ -28,6 +39,7 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
         };
 
         fetchConfirmedEvents();
+        */
     }, []);
 
     const cancelarAsistencia = (eventoId) => {
@@ -50,10 +62,13 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
                         ) : (
                         <ul className="list-group">
                             {eventos.map(ev => (
-                            <li className="list-group-item d-flex justify-content-between align-items-center" key={ev.id}>
-                                <span>🎉 {ev.nombre} <span className="text-muted">({ev.fecha})</span></span>
-                                <button className="btn btn-outline-danger btn-sm" onClick={() => cancelarAsistencia(ev.id)}>
-                                Cancelar asistencia
+                            <li className="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center" key={ev.id}>
+                                <div>
+                                    <span>🎉 <strong>{ev.nombre}</strong> <span className="text-muted">({ev.fecha})</span></span>
+                                    <div className="text-muted small mt-1">{ev.descripcion}</div>
+                                </div>
+                                <button className="btn btn-outline-danger btn-sm mt-2 mt-md-0" onClick={() => cancelarAsistencia(ev.id)}>
+                                    Cancelar asistencia
                                 </button>
                             </li>
                             ))}

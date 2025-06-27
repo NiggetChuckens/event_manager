@@ -4,9 +4,9 @@ import Navbar from '../../components/common/navbar';
 import Footer from '../../components/common/footer';
 import EventsConfirmed from '../../components/common/eventsConfirmed';
 import EventsNotConfirmed from '../../components/common/eventsNotConfirmed';
-import { fetchEvents } from '../../api/user/fetchEvents';
+// import { fetchEvents } from '../../api/user/fetchEvents';
 import { validateUserToken } from '../../api/user/validateToken'
-import { fetchPendingEvents } from '../../api/user/fetchPendingEvents';
+// import { fetchPendingEvents } from '../../api/user/fetchPendingEvents';
 
 const Home = () => {
   const [eventos, setEventos] = useState([]);
@@ -15,18 +15,35 @@ const Home = () => {
   const [showSinConfirmar, setShowSinConfirmar] = useState(false);
 
   useEffect(() => {
-    fetchEvents(setEventos);
+    // Simulación de próximos eventos
+    setTimeout(() => {
+      setEventos([
+        { nombre: 'Reunion mensual', fecha_inicio: '2025-07-10', descripcion: 'Reunión de seguimiento mensual con el equipo.' },
+        { nombre: 'Charla con lideres', fecha_inicio: '2025-07-15', descripcion: 'Charla inspiradora con líderes de la industria.' },
+        { nombre: 'Marketing', fecha_inicio: '2025-08-01', descripcion: 'Taller práctico de marketing digital.' },
+      ]);
+    }, 500);
+    // Para datos reales, descomentar lo siguiente:
+    // fetchEvents(setEventos);
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setPendingEvents([
+        { id: 10, nombre: 'Taller de Node.js', fecha_inicio: '2025-07-20', estado: 'pendiente', descripcion: 'Aprende Node.js desde cero.' },
+        { id: 11, nombre: 'Seminario UX', fecha_inicio: '2025-07-25', estado: 'cancelada', descripcion: 'Seminario sobre experiencia de usuario.' },
+        { id: 12, nombre: 'Meetup Verde', fecha_inicio: '2025-08-05', estado: 'pendiente', descripcion: 'Encuentro de networking para proyectos verdes.' },
+      ]);
+    }, 500);
+    // Para datos reales, descomentar lo siguiente:
+    // const token = localStorage.getItem('authToken');
+    // if (token) {
+    //   fetchPendingEvents(token, setPendingEvents);
+    // }
   }, []);
 
   useEffect(() => {
     validateUserToken();
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      fetchPendingEvents(token, setPendingEvents);
-    }
   }, []);
 
   const usuarioId = 1;
@@ -61,7 +78,8 @@ const Home = () => {
                     ) : (
                       eventos.map((ev, i) => (
                         <li className="list-group-item" key={i}>
-                          📅 {ev.nombre} - {ev.fecha_inicio}
+                          <div>📅 <strong>{ev.nombre}</strong> - {ev.fecha_inicio}</div>
+                          <div className="text-muted small mt-1">{ev.descripcion}</div>
                         </li>
                       ))
                     )}
@@ -77,7 +95,8 @@ const Home = () => {
                     ) : (
                       pendingEvents.map((ev, i) => (
                         <li className="list-group-item" key={i}>
-                          📅 {ev.nombre} - {ev.fecha_inicio}
+                          <div>📅 <strong>{ev.nombre}</strong> - {ev.fecha_inicio}</div>
+                          <div className="text-muted small mt-1">{ev.descripcion}</div>
                         </li>
                       ))
                     )}
