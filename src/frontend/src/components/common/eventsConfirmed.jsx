@@ -11,9 +11,33 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
         // Simulación de eventos confirmados para pruebas visuales
         setTimeout(() => {
             setEventos([
-                { id: 1, nombre: 'Reunion mensual', fecha: '2025-07-10', descripcion: 'Reunión de seguimiento mensual con el equipo.' },
-                { id: 2, nombre: 'Charla con lideres', fecha: '2025-07-15', descripcion: 'Charla inspiradora con líderes de la industria.' },
-                { id: 3, nombre: 'Marketing', fecha: '2025-08-01', descripcion: 'Taller práctico de marketing digital.' },
+                {
+                    id: 1,
+                    nombre: 'Reunion mensual',
+                    fecha: '2025-07-10',
+                    descripcion: 'Reunión de seguimiento mensual con el equipo.',
+                    categoria: 'Reunión',
+                    departamento: 'Recursos Humanos',
+                    importancia: 'Alta'
+                },
+                {
+                    id: 2,
+                    nombre: 'Charla con lideres',
+                    fecha: '2025-07-15',
+                    descripcion: 'Charla inspiradora con líderes de la industria.',
+                    categoria: 'Charla',
+                    departamento: 'Dirección',
+                    importancia: 'Media'
+                },
+                {
+                    id: 3,
+                    nombre: 'Marketing',
+                    fecha: '2025-08-01',
+                    descripcion: 'Taller práctico de marketing digital.',
+                    categoria: 'Taller',
+                    departamento: 'Marketing',
+                    importancia: 'Baja'
+                },
             ]);
             setLoading(false);
         }, 500);
@@ -57,6 +81,7 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
         setShowMotivo(false);
         setEventoCancelar(null);
         setMotivo('');
+        // Aquí podrías enviar el motivo al backend si lo deseas
     };
 
     return (
@@ -80,6 +105,7 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
                                 <div>
                                     <span>🎉 <strong>{ev.nombre}</strong> <span className="text-muted">({ev.fecha})</span></span>
                                     <div className="text-muted small mt-1">{ev.descripcion}</div>
+                                    <div className="text-muted small">Categoría: <strong>{ev.categoria}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
                                 </div>
                                 <button className="btn btn-outline-danger btn-sm mt-2 mt-md-0" onClick={() => handleCancelarClick(ev)}>
                                     Cancelar asistencia

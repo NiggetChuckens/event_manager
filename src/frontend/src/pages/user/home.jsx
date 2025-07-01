@@ -18,9 +18,9 @@ const Home = () => {
     // Simulación de próximos eventos
     setTimeout(() => {
       setEventos([
-        { nombre: 'Reunion mensual', fecha_inicio: '2025-07-10', descripcion: 'Reunión de seguimiento mensual con el equipo.' },
-        { nombre: 'Charla con lideres', fecha_inicio: '2025-07-15', descripcion: 'Charla inspiradora con líderes de la industria.' },
-        { nombre: 'Marketing', fecha_inicio: '2025-08-01', descripcion: 'Taller práctico de marketing digital.' },
+        { nombre: 'Reunion mensual', fecha_inicio: '2025-07-10', descripcion: 'Reunión de seguimiento mensual con el equipo.', categoria: 'Reunión', departamento: 'Recursos Humanos', importancia: 'Alta' },
+        { nombre: 'Charla con lideres', fecha_inicio: '2025-07-15', descripcion: 'Charla inspiradora con líderes de la industria.', categoria: 'Charla', departamento: 'Dirección', importancia: 'Media' },
+        { nombre: 'Marketing', fecha_inicio: '2025-08-01', descripcion: 'Taller práctico de marketing digital.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Baja' },
       ]);
     }, 500);
     // Para datos reales, descomentar lo siguiente:
@@ -30,9 +30,9 @@ const Home = () => {
   useEffect(() => {
     setTimeout(() => {
       setPendingEvents([
-        { id: 10, nombre: 'Taller de Node.js', fecha_inicio: '2025-07-20', estado: 'pendiente', descripcion: 'Aprende Node.js desde cero.' },
-        { id: 11, nombre: 'Seminario UX', fecha_inicio: '2025-07-25', estado: 'cancelada', descripcion: 'Seminario sobre experiencia de usuario.' },
-        { id: 12, nombre: 'Meetup Verde', fecha_inicio: '2025-08-05', estado: 'pendiente', descripcion: 'Encuentro de networking para proyectos verdes.' },
+        { id: 10, nombre: 'Taller de Node.js', fecha_inicio: '2025-07-20', estado: 'pendiente', descripcion: 'Aprende Node.js desde cero.', categoria: 'Taller', departamento: 'TI', importancia: 'Alta' },
+        { id: 11, nombre: 'Seminario UX', fecha_inicio: '2025-07-25', estado: 'cancelada', descripcion: 'Seminario sobre experiencia de usuario.', categoria: 'Seminario', departamento: 'Diseño', importancia: 'Media' },
+        { id: 12, nombre: 'Meetup Verde', fecha_inicio: '2025-08-05', estado: 'pendiente', descripcion: 'Encuentro de networking para proyectos verdes.', categoria: 'Meetup', departamento: 'Sustentabilidad', importancia: 'Baja' },
       ]);
     }, 500);
     // Para datos reales, descomentar lo siguiente:
@@ -80,6 +80,7 @@ const Home = () => {
                         <li className="list-group-item" key={i}>
                           <div>📅 <strong>{ev.nombre}</strong> - {ev.fecha_inicio}</div>
                           <div className="text-muted small mt-1">{ev.descripcion}</div>
+                          <div className="text-muted small">Categoría: <strong>{ev.categoria}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
                         </li>
                       ))
                     )}
@@ -97,6 +98,7 @@ const Home = () => {
                         <li className="list-group-item" key={i}>
                           <div>📅 <strong>{ev.nombre}</strong> - {ev.fecha_inicio}</div>
                           <div className="text-muted small mt-1">{ev.descripcion}</div>
+                          <div className="text-muted small">Categoría: <strong>{ev.categoria}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
                         </li>
                       ))
                     )}
