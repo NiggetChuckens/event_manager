@@ -52,10 +52,10 @@ const Home = () => {
     <>
       <Navbar />
 
-      <div style={{ minHeight: '100vh', backgroundColor: '#DAFDDC', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100vh', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
         <div className="flex-grow-1">
           <div className="container text-center py-5">
-            <p className="lead fw-bold mb-5" style={{ color: '#198754', fontSize: '2rem' }}>
+            <p className="lead fw-bold mb-5" style={{ color: '#222', fontSize: '2rem' }}>
               Organiza, gestiona y participa en eventos de forma divertida y profesional.
             </p>
             <div className="row justify-content-center g-4">

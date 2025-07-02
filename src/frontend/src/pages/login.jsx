@@ -39,7 +39,7 @@ const Login = () => {
       className="d-flex justify-content-center align-items-center"
       style={{
         minHeight: '100vh',
-        backgroundColor: '#DAFDDC',
+        backgroundColor: '#fff',
         padding: '1rem'
       }}
     >
@@ -55,7 +55,7 @@ const Login = () => {
         <h1
           className="text-center mb-2"
           style={{
-            color: '#065f46',
+            color: '#222',
             fontSize: '2.5rem',
             fontWeight: 'bold'
           }}
