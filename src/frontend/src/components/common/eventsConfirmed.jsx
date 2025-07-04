@@ -18,7 +18,8 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
                     descripcion: 'Reunión de seguimiento mensual con el equipo.',
                     categoria: 'Reunión',
                     departamento: 'Recursos Humanos',
-                    importancia: 'Alta'
+                    importancia: 'Alta',
+                    presentador: 'María González'
                 },
                 {
                     id: 2,
@@ -27,7 +28,8 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
                     descripcion: 'Charla inspiradora con líderes de la industria.',
                     categoria: 'Charla',
                     departamento: 'Dirección',
-                    importancia: 'Media'
+                    importancia: 'Media',
+                    presentador: 'Carlos Pérez'
                 },
                 {
                     id: 3,
@@ -36,7 +38,8 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
                     descripcion: 'Taller práctico de marketing digital.',
                     categoria: 'Taller',
                     departamento: 'Marketing',
-                    importancia: 'Baja'
+                    importancia: 'Baja',
+                    presentador: 'Ana Torres'
                 },
             ]);
             setLoading(false);
@@ -106,6 +109,7 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
                                     <span>🎉 <strong>{ev.nombre}</strong> <span className="text-muted">({ev.fecha})</span></span>
                                     <div className="text-muted small mt-1">{ev.descripcion}</div>
                                     <div className="text-muted small">Categoría: <strong>{ev.categoria}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
+                                    <div className="text-muted small">Presenta: <strong>{ev.presentador}</strong></div>
                                 </div>
                                 <button className="btn btn-outline-danger btn-sm mt-2 mt-md-0" onClick={() => handleCancelarClick(ev)}>
                                     Cancelar asistencia

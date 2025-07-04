@@ -20,9 +20,8 @@ const Login = () => {
     if (result.success) {
       const token = localStorage.getItem('authToken');
       const decodedToken = jwtDecode(token);
-      const userType = decodedToken.rol; // Extract user type from token
+      const userType = decodedToken.rol;
 
-      // Redirect based on user type
       if (userType === 'admin') {
         navigate('/admin/home');
       } else {
@@ -39,57 +38,43 @@ const Login = () => {
       className="d-flex justify-content-center align-items-center"
       style={{
         minHeight: '100vh',
-        backgroundColor: '#fff',
+        background: 'linear-gradient(135deg, #e9f7ef 0%, #fff 100%)',
         padding: '1rem'
       }}
     >
       <div
-        className="card shadow-lg p-4 rounded-4 border border-4 border-success border-opacity-75 login-glow"
+        className="card shadow-lg p-4 rounded-4 border-0 login-glow"
         style={{
           width: '100%',
-          maxWidth: '500px',
-          backgroundColor: '#93E495',
-          boxShadow: '0 0 32px 8px #25a366cc, 0 0 64px 16px #b9ffd6cc inset'
+          maxWidth: '420px',
+          background: '#fff',
+          boxShadow: '0 8px 32px 0 #25a36633, 0 0 0 1px #25a36622',
+          borderRadius: '2rem'
         }}
       >
-        <h1
-          className="text-center mb-2"
-          style={{
-            color: '#222',
-            fontSize: '2.5rem',
-            fontWeight: 'bold'
-          }}
-        >
-          ¡Bienvenido!
-        </h1>
-        <h4
-          className="text-center mb-4"
-          style={{
-            color: '#1b4332',
-            fontWeight: '500'
-          }}
-        >
-          🔐 Inicia sesión con tu cuenta
-        </h4>
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">📧 Correo electrónico</label>
+        <div className="text-center mb-4">
+          <h1 className="mb-1" style={{ color: '#222', fontSize: '2.2rem', fontWeight: 700, letterSpacing: 1 }}>Event Manager</h1>
+          <h4 className="mb-0" style={{ color: '#198754', fontWeight: 500, fontSize: '1.1rem' }}>🔐 Inicia sesión con tu cuenta</h4>
+        </div>
+        <form onSubmit={handleSubmit} className="mt-2">
+          <div className="mb-3 text-start">
+            <label className="form-label fw-semibold">📧 Correo electrónico</label>
             <input
               type="email"
-              className="form-control"
+              className="form-control form-control-lg rounded-3"
               name="correo"
               value={form.correo}
               onChange={handleChange}
               placeholder="example@gmail.com"
               required
+              autoFocus
             />
           </div>
-          <div className="mb-4">
-            <label className="form-label">🔑 Contraseña</label>
+          <div className="mb-4 text-start">
+            <label className="form-label fw-semibold">🔑 Contraseña</label>
             <input
               type="password"
-              className="form-control"
+              className="form-control form-control-lg rounded-3"
               name="contraseña"
               value={form.contraseña}
               onChange={handleChange}
@@ -97,18 +82,22 @@ const Login = () => {
               required
             />
           </div>
-          <button type="submit" className="btn btn-success w-100">Entrar</button>
+          <button type="submit" className="btn btn-success w-100 py-2 fs-5 rounded-3 shadow-sm">Entrar</button>
         </form>
+        <div className="text-center mt-4">
+          <span className="text-muted" style={{ fontSize: '0.95rem' }}>
+            ¿No tienes cuenta? <Link to="/registro" className="text-success fw-semibold text-decoration-none">Regístrate</Link>
+          </span>
+        </div>
       </div>
       <style>{`
         .login-glow {
-          box-shadow: 0 0 32px 8px #25a366cc, 0 0 64px 16px #b9ffd6cc inset !important;
-          border-color: #25a366 !important;
-          animation: loginGlowPulse 2s infinite alternate;
+          box-shadow: 0 8px 32px 0 #25a36633, 0 0 0 1px #25a36622 !important;
+          border-radius: 2rem !important;
+          border: none !important;
         }
-        @keyframes loginGlowPulse {
-          0% { box-shadow: 0 0 32px 8px #25a366cc, 0 0 64px 16px #b9ffd6cc inset; }
-          100% { box-shadow: 0 0 48px 16px #25a366ee, 0 0 96px 32px #b9ffd6ee inset; }
+        .login-glow:focus-within {
+          box-shadow: 0 0 0 4px #25a36644, 0 8px 32px 0 #25a36633;
         }
       `}</style>
     </div>

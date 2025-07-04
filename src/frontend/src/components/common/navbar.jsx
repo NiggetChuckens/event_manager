@@ -21,7 +21,6 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4">
       <div className="container-fluid align-items-center position-relative" style={{ minHeight: 64 }}>
-        <img src="/logo192.png" alt="Logo" width="40" height="40" className="me-2 rounded-circle border border-light" />
         <span className="navbar-brand fw-bold fs-4 me-4">Event Manager</span>
         <div className="flex-grow-1 d-flex justify-content-center">
           <span className="text-light fw-bold fs-3 text-center w-100" style={{ position: 'absolute', left: 0, right: 0, top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>

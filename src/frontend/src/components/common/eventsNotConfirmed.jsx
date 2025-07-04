@@ -8,9 +8,9 @@ const EventsNotConfirmed = ({ usuarioId, onClose }) => {
         // Simulación de eventos pendientes/cancelados para pruebas visuales
         setTimeout(() => {
             setEventos([
-                { id: 10, nombre: 'Taller de marketing', fecha: '2025-07-20', estado: 'pendiente', descripcion: 'Aprende estrategias de marketing digital.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Alta' },
-                { id: 11, nombre: 'Informacion', fecha: '2025-07-25', estado: 'cancelada', descripcion: 'Sesión informativa sobre nuevos proyectos.', categoria: 'Sesión', departamento: 'Dirección', importancia: 'Media' },
-                { id: 12, nombre: 'Marketing 2', fecha: '2025-08-05', estado: 'pendiente', descripcion: 'Segunda parte del taller de marketing.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Baja' },
+                { id: 10, nombre: 'Taller de marketing', fecha: '2025-07-20', estado: 'pendiente', descripcion: 'Aprende estrategias de marketing digital.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Alta', presentador: 'Lucía Ramírez' },
+                { id: 11, nombre: 'Informacion', fecha: '2025-07-25', estado: 'cancelada', descripcion: 'Sesión informativa sobre nuevos proyectos.', categoria: 'Sesión', departamento: 'Dirección', importancia: 'Media', presentador: 'Pedro López' },
+                { id: 12, nombre: 'Marketing 2', fecha: '2025-08-05', estado: 'pendiente', descripcion: 'Segunda parte del taller de marketing.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Baja', presentador: 'Ana Torres' },
             ]);
             setLoading(false);
         }, 500);
@@ -67,6 +67,7 @@ const EventsNotConfirmed = ({ usuarioId, onClose }) => {
                                     <span>{ev.estado === 'pendiente' ? '⏳' : '❌'} <strong>{ev.nombre}</strong> <span className="text-muted">({ev.fecha})</span></span>
                                     <div className="text-muted small mt-1">{ev.descripcion}</div>
                                     <div className="text-muted small">Categoría: <strong>{ev.categoria}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
+                                    <div className="text-muted small">Presenta: <strong>{ev.presentador}</strong></div>
                                 </div>
                                 {['pendiente', 'cancelada'].includes(ev.estado) && (
                                 <button className="btn btn-success btn-sm mt-2 mt-md-0" onClick={() => confirmarAsistencia(ev.id)}>
