@@ -13,7 +13,16 @@ const EditUserPage = () => {
     name: '',
     email: '',
     role: '',
+    departamento: ''
   });
+
+  const departamentos = [
+    'Recursos Humanos',
+    'TI',
+    'Marketing',
+    'Finanzas',
+    'Logística'
+  ];
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -30,6 +39,7 @@ const EditUserPage = () => {
             name: result.name,
             email: result.email,
             role: result.role,
+            departamento: result.departamento || ''
           });
         } else {
           console.error('Failed to fetch user details:', result.message);
@@ -61,16 +71,15 @@ const EditUserPage = () => {
 
       const result = await updateUser(id, form, adminEmail, token);
       if (result.success) {
-        console.log('User updated successfully');
-        setNotification('User updated successfully!');
+        setNotification('Usuario actualizado correctamente');
         setTimeout(() => navigate('/admin/users'), 2000);
       } else {
         console.error('Failed to update user:', result.message);
-        setNotification('Failed to update user. Please try again.');
+        setNotification('No se pudo actualizar el usuario. Intente nuevamente.');
       }
     } catch (error) {
       console.error('Error updating user:', error);
-      setNotification('An error occurred while updating the user.');
+      setNotification('Ocurrió un error al actualizar el usuario.');
     }
   };
 
@@ -118,8 +127,25 @@ const EditUserPage = () => {
               required
             >
               <option value="">Selecciona un rol</option>
-              <option value="moderator">Moderador</option>
               <option value="user">Usuario</option>
+              <option value="moderator">Moderador</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Departamento</label>
+            <select
+              name="departamento"
+              className="form-select"
+              value={form.departamento}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Selecciona un departamento</option>
+              {departamentos.map((dep, index) => (
+                <option key={index} value={dep}>{dep}</option>
+              ))}
             </select>
           </div>
 
