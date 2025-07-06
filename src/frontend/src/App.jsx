@@ -11,6 +11,8 @@ import EditUser from './pages/admin/edit/user';
 import Home from './pages/user/home';
 import Perfil from './pages/user/perfil';
 import Stats from './pages/admin/stats';
+import Department from './pages/admin/departments';
+import CreateDepartment from './pages/admin/create/department';
 import { validateToken } from './api/admin/validateToken';
 
 const App = () => {
@@ -70,6 +72,9 @@ const App = () => {
         <Route path="/admin/create-event" element={<CreateEvent />} />
         <Route path="/admin/edit-user/:id" element={<EditUser />} />
         <Route path="/admin/edit-event/:id" element={<EditEvent />} />
+        <Route path="/admin/departments" element={<Department />} />
+        <Route path="/admin/departments/create" element={<CreateDepartment />} />
+
       </Routes>
     </Router>
   );
