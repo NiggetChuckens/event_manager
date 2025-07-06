@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import Navbar from '../../components/common/navbar';
 import Footer from '../../components/common/footer';
 import EventsConfirmed from '../../components/common/eventsConfirmed';
 import EventsNotConfirmed from '../../components/common/eventsNotConfirmed';
+
+import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { fetchEvents } from '../../api/user/fetchEvents';
 import { validateUserToken } from '../../api/user/validateToken'
 import { fetchPendingEvents } from '../../api/user/fetchPendingEvents';
+import { fetchUpcomingEvents } from '../../api/user/fetchUpcomingEvents';
+import { fetchConfirmedAssistanceEvents } from '../../api/user/fetchConfirmedAssistanceEvents';
+import { fetchPendingAssistanceConfirmations } from '../../api/user/fetchPendingAssistanceConfirmations';
 
 const Home = () => {
   
@@ -24,11 +28,31 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    fetchUpcomingEvents()
+      .then((data) => setEventos(data.events))
+      .catch((error) => console.error('Error fetching upcoming events:', error));
+  }, []);
+
+  useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      fetchPendingEvents(token, setPendingEvents);
+      fetchPendingEvents(token)
+        .then((data) => setPendingEvents(data.events))
+        .catch((error) => console.error('Error fetching pending events:', error));
     }
   }, []);
+
+  const handleFetchConfirmedEvents = () => {
+    fetchConfirmedAssistanceEvents(usuarioId)
+      .then((data) => console.log('Confirmed events:', data.events))
+      .catch((error) => console.error('Error fetching confirmed events:', error));
+  };
+
+  const handleFetchPendingConfirmations = () => {
+    fetchPendingAssistanceConfirmations(usuarioId)
+      .then((data) => console.log('Pending confirmations:', data.events))
+      .catch((error) => console.error('Error fetching pending confirmations:', error));
+  };
 
   const usuarioId = 1;
   
@@ -49,8 +73,8 @@ const Home = () => {
                   <h3 className="text-success mb-4">⚡ Acciones rápidas</h3>
                   <div className="d-flex flex-column gap-3">
                     <Link to="/perfil" className="btn btn-outline-success px-4">👤 Mi perfil</Link>
-                    <button className="btn btn-outline-success px-4" onClick={() => setShowConfirmados(true)}>✅ Eventos confirmados</button>
-                    <button className="btn btn-outline-success px-4" onClick={() => setShowSinConfirmar(true)}>⏳ Eventos por confirmar</button>
+                    <button className="btn btn-outline-success px-4" onClick={handleFetchConfirmedEvents}>✅ Eventos confirmados</button>
+                    <button className="btn btn-outline-success px-4" onClick={handleFetchPendingConfirmations}>⏳ Eventos por confirmar</button>
                   </div>
                 </div>
               </div>

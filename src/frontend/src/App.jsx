@@ -56,6 +56,7 @@ const App = () => {
       <Routes>
         {/* Default route */}
         <Route path="/" element={<IniciarSesion />} />
+        <Route path="/login" element={<IniciarSesion />} />
 
         {/* User routes */}
         <Route path="/home" element={<Home />} />

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Footer from '../../../components/common/footer';
 import Navbar from '../../../components/admin/navbar';
+import { editEvent } from '../../..//api/admin/editEvent';
 
 const CreateEvent = () => {
   const [formData, setFormData] = useState({
@@ -23,9 +24,22 @@ const CreateEvent = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Evento enviado:', formData);
+    try {
+      const eventData = {
+        title: formData.titulo,
+        description: formData.descripcion,
+        start_date: formData.fecha,
+        end_date: formData.hora,
+        platform: formData.lugar,
+        url: formData.lugar,
+      };
+      const response = await editEvent(eventData);
+      console.log('Event edited successfully:', response);
+    } catch (error) {
+      console.error('Error editing event:', error);
+    }
   };
 
   return (

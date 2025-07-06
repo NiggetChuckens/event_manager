@@ -11,11 +11,24 @@ class Database:
     
     def initialize(self):
         if self.check_if_exists(): 
-            return("Base de datos existente e inicializada.")
+            return("Database exists and initialized.")
         self.create_tables()
-        return("Base de datos creada e inicializada.")
+        return("Database created and initialized.")
     
     def create_tables(self):
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Department (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            manager_name TEXT NOT NULL,
+            manager_email TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(name), UNIQUE(manager_email),
+            FOREIGN KEY (manager_name) REFERENCES User(name) ON DELETE SET NULL,
+            FOREIGN KEY (manager_email) REFERENCES User(email) ON DELETE SET NULL
+        )
+        ''')
+        
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS User (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,7 +36,13 @@ class Database:
             email TEXT NOT NULL,
             password TEXT NOT NULL,
             user_role TEXT NOT NULL DEFAULT 'user',
-            created_by TEXT NOT NULL
+            department TEXT NOT NULL DEFAULT 'general',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_by TEXT NOT NULL DEFAULT 'system',
+            created_by TEXT NOT NULL DEFAULT 'system',
+            UNIQUE(email),
+            FOREIGN KEY (department) REFERENCES Department(name) ON DELETE SET NULL
         )
         ''')
         
@@ -38,43 +57,44 @@ class Database:
         ''')
         
         self.cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Evento (
+        CREATE TABLE IF NOT EXISTS Event (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            titulo TEXT NOT NULL,
-            descripcion TEXT,
-            fecha_inicio DATETIME NOT NULL,
-            fecha_fin DATETIME NOT NULL,
-            organizador TEXT NOT NULL,
-            organizador_id INTEGER NOT NULL,
-            plataforma TEXT NOT NULL,
+            title TEXT NOT NULL,
+            description TEXT,
+            start_date DATETIME NOT NULL,
+            end_date DATETIME NOT NULL,
+            moderator TEXT NOT NULL,
+            moderator_id INTEGER NOT NULL,
+            department TEXT NOT NULL,
+            importance TEXT NOT NULL,
             url TEXT NOT NULL,
-            asistencia INTEGER DEFAULT 0,
-            estado TEXT NOT NULL DEFAULT 'pendiente',
-            fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-            fecha_modificacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (organizador_id) REFERENCES User(id) ON DELETE SET NULL, 
-            FOREIGN KEY (organizador) REFERENCES User(name) ON DELETE SET NULL
+            assistance INTEGER DEFAULT 0,
+            status TEXT NOT NULL DEFAULT 'pending',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (moderator_id) REFERENCES User(id) ON DELETE SET NULL, 
+            FOREIGN KEY (moderator) REFERENCES User(name) ON DELETE SET NULL
         )
         ''')
         
         self.cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Asistencia (
-            idAsistencia INTEGER PRIMARY KEY,
-            usuario_id INTEGER NOT NULL,
-            evento_id INTEGER NOT NULL,
-            estado TEXT,
-            FOREIGN KEY (usuario_id) REFERENCES Usuario(id),
-            FOREIGN KEY (evento_id) REFERENCES Evento(id)
+        CREATE TABLE IF NOT EXISTS Assistance (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            event_id INTEGER NOT NULL,
+            confirmed BOOLEAN NOT NULL DEFAULT 0,
+            FOREIGN KEY (user_id) REFERENCES User(id),
+            FOREIGN KEY (event_id) REFERENCES Event(id)
         )
         ''')
         
         self.cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Grabacion (
-            idGrabacion INTEGER PRIMARY KEY,
-            evento_id INTEGER NOT NULL,
+        CREATE TABLE IF NOT EXISTS Recording (
+            id INTEGER PRIMARY KEY,
+            event_id INTEGER NOT NULL,
             url TEXT NOT NULL,
-            fechaSubida DATETIME NOT NULL,
-            FOREIGN KEY (evento_id) REFERENCES Evento(id)
+            uploaded_at DATETIME NOT NULL,
+            FOREIGN KEY (event_id) REFERENCES Event(id)
         )
         ''')
         self.connection.commit()
