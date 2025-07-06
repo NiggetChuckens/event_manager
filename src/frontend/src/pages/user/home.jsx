@@ -20,26 +20,26 @@ const Home = () => {
   const [showSinConfirmar, setShowSinConfirmar] = useState(false);
 
   useEffect(() => {
-    fetchEvents(setEventos);
-  }, []);
+    const fetchAllData = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
 
-  useEffect(() => {
-    validateUserToken();
-  }, []);
+        const [eventsResponse, upcomingEventsResponse, assistanceEventsResponse] = await Promise.all([
+          fetchEvents(),
+          fetchUpcomingEvents(),
+          token ? fetchConfirmedAssistanceEvents(token) : Promise.resolve({ events: [] }),
+        ]);
 
-  useEffect(() => {
-    fetchUpcomingEvents()
-      .then((data) => setEventos(data.events))
-      .catch((error) => console.error('Error fetching upcoming events:', error));
-  }, []);
+        setEventos(upcomingEventsResponse.events || eventsResponse.events);
+        setPendingEvents(assistanceEventsResponse.events);
 
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      fetchPendingEvents(token)
-        .then((data) => setPendingEvents(data.events))
-        .catch((error) => console.error('Error fetching pending events:', error));
-    }
+        validateUserToken();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchAllData();
   }, []);
 
   const handleFetchConfirmedEvents = () => {

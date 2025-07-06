@@ -116,7 +116,7 @@ def delete_user(admin_email, target_email):
 
 def get_user_details_by_token(token):
     """
-    Fetches user details by token.
+    Fetch user details using the authorization token.
 
     Args:
         token (str): Authorization token.
@@ -127,36 +127,26 @@ def get_user_details_by_token(token):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT * FROM User WHERE token = ?", (token,))
+    cursor.execute(
+        """
+        SELECT User.* FROM User
+        INNER JOIN Login ON User.id = Login.user_id
+        WHERE Login.token = ?
+        """,
+        (token,)
+    )
     user = cursor.fetchone()
     connection.close()
 
     if not user:
-        return {"success": False,"message": "Invalid token"}
+        return {"success": False, "message": "Invalid token"}
 
-    return {"success": True, "username": user[1]}
-
-def validate_token(token):
-    """
-    Validates a token.
-
-    Args:
-        token (str): Authorization token.
-
-    Returns:
-        dict: Validation result.
-    """
-    connection = sqlite3.connect(DATABASE)
-    cursor = connection.cursor()
-
-    cursor.execute("SELECT token FROM Login WHERE token = ?", (token,))
-    valid_token = cursor.fetchone()
-    connection.close()
-
-    if not valid_token:
-        return {"success": False, "message": "Invalid or expired token"}
-
-    return {"success": True, "message": "Token is valid"}
+    return {
+        "success": True,
+        "username": user[1],
+        "email": user[2],
+        "role": user[4],
+    }
 
 def fetch_all_users():
     """
@@ -259,4 +249,3 @@ if __name__ == "__main__":
     
     response = create_user('Moderator Test', 'modtest@test.com', 'password123', 'rodrigo@test.com', 'testing', 'moderator')
     print(response)
-    

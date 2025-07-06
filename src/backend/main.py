@@ -6,8 +6,8 @@ from flask_cors import CORS
 sys.path.append(os.path.join(os.path.dirname(__file__), 'db')); sys.path.append(os.path.join(os.path.dirname(__file__), 'functions'))
 
 from db.db_init import Database
-from functions.user_management import create_user, login_user, delete_user, get_user_details_by_token, validate_token, fetch_all_users, get_user_details_by_id, update_user
-from functions.event_management import get_pending_events, create_event, edit_event, delete_event, confirm_assistance, cancel_assistance, fetch_confirmed_assistance_events, fetch_pending_assistance_confirmations, fetch_upcoming_events
+from functions.user_management import create_user, login_user, delete_user, get_user_details_by_token, fetch_all_users, get_user_details_by_id, update_user
+from functions.event_management import fetch_event_id_by_details, create_event, edit_event, delete_event, fetch_upcoming_events, fetch_all_events_as_admin, fetch_event_by_id
 
 db = Database().initialize()
 app = flask.Flask(__name__)
@@ -109,26 +109,6 @@ def user_details():
     result = get_user_details_by_token(token)
     return jsonify(result)
 
-'''@app.route("/validate_token", methods=["POST"])
-def validate_token_api():
-    """
-    API endpoint to validate a token.
-
-    Expects:
-        JSON object with 'token'.
-
-    Returns:
-        JSON response with validation result.
-    """
-    data = request.json
-    token = data.get("token")
-
-    if not token:
-        return jsonify({"success": False, "message": "Token is required"}), 400
-
-    result = validate_token(token)
-    return jsonify(result)'''
-
 @app.route("/fetch_users", methods=["GET"])
 def fetch_users_api():
     """
@@ -186,67 +166,32 @@ def update_user_api():
 ###################################################################################
 # Event Management Endpoints
 
-@app.route("/upcoming_events", methods=["GET"])
-def upcoming_events_api():
-    """
-    API endpoint to fetch upcoming events.
-
-    Returns:
-        JSON response with list of upcoming events.
-    """
-    result = fetch_upcoming_events()
-    return jsonify(result)
-
-'''@app.route('/pending_events', methods=['GET'])
-def pending_events_api():
-    """
-    API endpoint to fetch pending events for a user.
-
-    Expects:
-        'Authorization' header with token.
-
-    Returns:
-        JSON response with list of pending events.
-    """
-    token = request.headers.get('Authorization')
-    if not token:
-        return jsonify({'success': False, 'message': 'Authorization token missing'}), 401
-
-    try:
-        user_id = jwt.decode(token, algorithms=["HS256"], options={"verify_signature": False}).get('user_id')
-    except jwt.exceptions.DecodeError:
-        return jsonify({'success': False, 'message': 'Invalid token format'}), 401
-
-    if not user_id:
-        return jsonify({'success': False, 'message': 'Invalid token'}), 401
-
-    events = get_pending_events(user_id)
-    return jsonify({'success': True, 'events': events})'''
-
 @app.route("/create_event", methods=["POST"])
 def create_event_api():
     """
     API endpoint to create an event as an admin.
 
     Expects:
-        JSON object with 'admin_id', 'title', 'description', 'start_date', 'end_date', 'platform', and 'url'.
+        JSON object with admin_email, moderator_email, title, description, start_date, end_date, department, importance and url.
 
     Returns:
         JSON response with success or error message.
     """
     data = request.json
-    admin_id = data.get("admin_id")
+    admin_email = data.get("admin_email")
+    moderator_email = data.get("moderator_email")
     title = data.get("title")
     description = data.get("description")
     start_date = data.get("start_date")
     end_date = data.get("end_date")
-    platform = data.get("platform")
+    department = data.get("department")  
+    importance = data.get("importance")
     url = data.get("url")
 
-    if not admin_id or not title or not start_date or not end_date or not platform or not url:
-        return jsonify({"success": False, "message": "All fields are required"}), 400
-
-    result = create_event(admin_id, title, description, start_date, end_date, platform, url)
+    if not admin_email or not moderator_email or not title or not description or not start_date or not end_date or not department or not importance or not url:
+        return jsonify({"success": False, "message": "Missing required fields."}), 400
+    
+    result = create_event(admin_email, moderator_email, title, description, start_date, end_date, department, importance, url)
     return jsonify(result)
 
 @app.route("/edit_event", methods=["POST"])
@@ -260,22 +205,68 @@ def edit_event_api():
     Returns:
         JSON response with success or error message.
     """
-    data = request.json
-    admin_id = data.get("admin_id")
-    event_id = data.get("event_id")
+    data = request.json    
+    id = data.get("id")
+    admin_email = data.get("admin_email")
+    moderator_email = data.get("moderator_email")
     title = data.get("title")
     description = data.get("description")
     start_date = data.get("start_date")
     end_date = data.get("end_date")
-    platform = data.get("platform")
+    department = data.get("department")  
+    importance = data.get("importance")
     url = data.get("url")
 
-    if not admin_id or not event_id:
-        return jsonify({"success": False, "message": "Admin ID and Event ID are required"}), 400
-
-    result = edit_event(admin_id, event_id, title, description, start_date, end_date, platform, url)
+    if not id or not admin_email or not moderator_email or not title or not description or not start_date or not end_date or not department or not importance or not url:
+        return jsonify({"success": False, "message": "Missing required fields."}), 400
+    
+    result = edit_event(event_id=id, 
+                        admin_email=admin_email,
+                        moderator_email=moderator_email,
+                        title=title, 
+                        description=description, 
+                        start_date=start_date, 
+                        end_date=end_date, 
+                        department=department, 
+                        importance=importance, 
+                        url=url)
     return jsonify(result)
 
+@app.route("/upcoming_events", methods=["GET"])
+def upcoming_events_api():
+    """
+    API endpoint to fetch upcoming events.
+
+    Returns:
+        JSON response with list of upcoming events.
+    """
+    result = fetch_upcoming_events()
+    return jsonify(result)
+
+@app.route("/fetch_all_events", methods=["GET"])
+def fetch_all_events_api():
+    """
+    API endpoint to fetch all events if the user is an admin.
+
+    Expects:
+        'Authorization' header with token.
+
+    Returns:
+        JSON response with list of all events or an error message.
+    """
+    token = request.headers.get("Authorization")
+    if not token:
+        return jsonify({"success": False, "message": "Token is required."}), 400
+
+    token = token.replace("Bearer ", "")
+    try:
+        user_data = get_user_details_by_token(token)
+    except Exception:
+        return jsonify({"success": False, "message": "Invalid token."}), 401
+    
+    result = fetch_all_events_as_admin(user_data['email'])
+    return jsonify(result)
+    
 @app.route("/delete_event", methods=["POST"])
 def delete_event_api():
     """
@@ -297,86 +288,24 @@ def delete_event_api():
     result = delete_event(admin_id, event_id)
     return jsonify(result)
 
-@app.route("/confirm_assistance", methods=["POST"])
-def confirm_assistance_api():
+@app.route("/get_event_by_id", methods=["GET"])
+def get_event_by_id_api():
     """
-    API endpoint to confirm assistance to an event.
+    API endpoint to fetch event details by ID.
 
     Expects:
-        JSON object with 'user_id' and 'event_id'.
+        Query parameter 'event_id'.
 
     Returns:
-        JSON response with success or error message.
+        JSON response with event details or error message.
     """
-    data = request.json
-    user_id = data.get("user_id")
-    event_id = data.get("event_id")
+    event_id = request.args.get("event_id")
+    if not event_id:
+        return jsonify({"success": False, "message": "Event ID is required"}), 400
 
-    if not user_id or not event_id:
-        return jsonify({"success": False, "message": "User ID and Event ID are required"}), 400
-
-    result = confirm_assistance(user_id, event_id)
+    result = fetch_event_by_id(event_id)
+    print(result)
     return jsonify(result)
-
-@app.route("/cancel_assistance", methods=["POST"])
-def cancel_assistance_api():
-    """
-    API endpoint to cancel assistance to an event.
-
-    Expects:
-        JSON object with 'user_id' and 'event_id'.
-
-    Returns:
-        JSON response with success or error message.
-    """
-    data = request.json
-    user_id = data.get("user_id")
-    event_id = data.get("event_id")
-
-    if not user_id or not event_id:
-        return jsonify({"success": False, "message": "User ID and Event ID are required"}), 400
-
-    result = cancel_assistance(user_id, event_id)
-    return jsonify(result)
-
-@app.route("/confirmed_assistance_events", methods=["GET"])
-def confirmed_assistance_events_api():
-    """
-    API endpoint to fetch confirmed assistance events for a user.
-
-    Expects:
-        Query parameter 'user_id'.
-
-    Returns:
-        JSON response with list of confirmed assistance events.
-    """
-    user_id = request.args.get("user_id")
-
-    if not user_id:
-        return jsonify({"success": False, "message": "User ID is required"}), 400
-
-    events = fetch_confirmed_assistance_events(user_id)
-    return jsonify({"success": True, "events": events})
-
-@app.route("/pending_assistance_confirmations", methods=["GET"])
-def pending_assistance_confirmations_api():
-    """
-    API endpoint to fetch pending assistance confirmations for a user.
-
-    Expects:
-        Query parameter 'user_id'.
-
-    Returns:
-        JSON response with list of pending assistance confirmations.
-    """
-    user_id = request.args.get("user_id")
-
-    if not user_id:
-        return jsonify({"success": False, "message": "User ID is required"}), 400
-
-    events = fetch_pending_assistance_confirmations(user_id)
-    return jsonify({"success": True, "events": events})
-
 
 if __name__ == '__main__':
     app.run(debug=True)

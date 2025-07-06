@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Footer from '../../../components/common/footer';
 import Navbar from '../../../components/admin/navbar';
-import { editEvent } from '../../..//api/admin/editEvent';
+import { editEvent } from '../../../api/admin/editEvent';
+import { fetchEventDetails } from '../../../api/admin/fetchEventDetails';
 
-const EditEvent = () => {
+const EditEvent = ({ eventId }) => {
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
@@ -17,6 +18,36 @@ const EditEvent = () => {
     importancia: 'Media',
   });
 
+  useEffect(() => {
+    if (!eventId) {
+      console.error('Event ID is undefined');
+      return;
+    }
+
+    const loadEventDetails = async () => {
+      try {
+        const response = await fetchEventDetails(eventId);
+        if (response.success) {
+          const event = response.event;
+          setFormData({
+            titulo: event.title,
+            descripcion: event.description,
+            fecha: event.start_date,
+            hora: event.time, // Updated field name
+            lugar: event.url,
+            moderador: event.moderator_email, // Ensure `moderador` is populated
+            departamento: event.department,
+            importancia: event.importance,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching event details:', error);
+      }
+    };
+
+    loadEventDetails();
+  }, [eventId]);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -27,15 +58,11 @@ const EditEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const eventData = {
-        title: formData.titulo,
-        description: formData.descripcion,
-        start_date: formData.fecha,
-        end_date: formData.hora,
-        platform: formData.lugar,
-        url: formData.lugar,
-      };
-      const response = await editEvent(eventData);
+      const token = localStorage.getItem('authToken');
+      const response = await editEvent({
+        ...formData,
+        event_id: eventId, 
+      }, token);
       console.log('Event edited successfully:', response);
     } catch (error) {
       console.error('Error editing event:', error);

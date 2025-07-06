@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../../../components/common/footer';
 import Navbar from '../../../components/admin/navbar';
-import { createEvent } from '../../../api/admin/createEvent';
+import { createEvent } from '../../../api/admin/create/createEvent';
 
 const CreateEvent = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,8 @@ const CreateEvent = () => {
     importancia: 'Media',
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -27,18 +30,13 @@ const CreateEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const eventData = {
-        title: formData.titulo,
-        description: formData.descripcion,
-        start_date: formData.fecha,
-        end_date: formData.hora,
-        platform: formData.lugar,
-        url: formData.lugar,
-      };
-      const response = await createEvent(eventData);
-      console.log('Event created successfully:', response);
+      const token = localStorage.getItem('authToken');
+      await createEvent({ ...formData }, token);
+      alert('Evento creado con éxito!');
+      navigate('/admin/events'); // Redirigir al panel de eventos
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error('Error al crear el evento:', error);
+      alert('Error al crear el evento. Por favor, inténtelo de nuevo.');
     }
   };
 
@@ -53,6 +51,7 @@ const CreateEvent = () => {
             <label className="form-label">Título del evento</label>
             <input
               type="text"
+              placeholder='Presupuestos mensuales de la empresa'
               name="titulo"
               className="form-control"
               value={formData.titulo}
@@ -65,6 +64,7 @@ const CreateEvent = () => {
             <label className="form-label">Descripción</label>
             <textarea
               name="descripcion"
+              placeholder='Ej: Reunion para dialogar respecto a las finanzas de la empresa durante el actual mes y los presupuestos disponibles para cada departamento'
               className="form-control"
               value={formData.descripcion}
               onChange={handleChange}
@@ -129,7 +129,8 @@ const CreateEvent = () => {
             <div className="col-md-6 mb-3">
               <label className="form-label">Moderador</label>
               <input
-                type="text"
+                type="email"
+                placeholder='Ej: mail@example.com'
                 name="moderador"
                 className="form-control"
                 value={formData.moderador}
@@ -143,6 +144,7 @@ const CreateEvent = () => {
               <input
                 type="text"
                 name="departamento"
+                placeholder='Ej: Contabilidad'
                 className="form-control"
                 value={formData.departamento}
                 onChange={handleChange}
@@ -170,6 +172,7 @@ const CreateEvent = () => {
             <input
               type="text"
               name="lugar"
+              placeholder='Ingrese aqui el link a la sala de reuniones'
               className="form-control"
               value={formData.lugar}
               onChange={handleChange}

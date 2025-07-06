@@ -1,4 +1,4 @@
-import sqlite3, os
+import sqlite3, os, time
 
 DATABASE = os.path.join(os.path.dirname(__file__), '..', os.environ.get("DB_NAME"))
 
@@ -40,12 +40,12 @@ def get_pending_events(user_id):
     ]
     return pending_events
 
-def is_admin(user_id):
+def is_admin(email):
     """
     Check if the user has an admin role.
 
     Args:
-        user_id (int): The ID of the user.
+        email (str): The email of the user.
 
     Returns:
         bool: True if the user is an admin, False otherwise.
@@ -53,18 +53,18 @@ def is_admin(user_id):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT role FROM User WHERE id = ?", (user_id,))
+    cursor.execute("SELECT user_role FROM User WHERE email = ?", (email,))
     role = cursor.fetchone()
     connection.close()
 
     return role and role[0] == 'admin'
 
-def create_event(admin_id, title, description, start_date, end_date, importance, url):
+def create_event(admin_email, moderator_email, title, description, start_date, end_date, department, importance, url):
     """
     Create a new event as an admin.
 
     Args:
-        admin_id (int): The ID of the admin creating the event.
+        admin_email (str): The email of the admin creating the event.
         title (str): Title of the event.
         description (str): Description of the event.
         start_date (str): Start date of the event.
@@ -75,27 +75,38 @@ def create_event(admin_id, title, description, start_date, end_date, importance,
     Returns:
         dict: Success or error message.
     """
-    if not is_admin(admin_id):
+    if not is_admin(admin_email):
         return {"success": False, "message": "Unauthorized: Admin role required."}
 
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
+    
+    # Fetch moderator ID and name based on email
+    mod_data = cursor.execute("SELECT name, id FROM User WHERE email = ?", (moderator_email,))
+    mod_data = mod_data.fetchone()
+    
+    if not mod_data:
+        connection.close()
+        return {"success": False, "message": "Moderator not found."}
 
     cursor.execute(
-        "INSERT INTO Event (title, description, start_date, end_date, organizer_id, importance, url) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (title, description, start_date, end_date, admin_id, importance, url)
+        '''INSERT INTO Event 
+        (title, description, start_date, end_date, moderator, moderator_id, department, importance, url) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''', 
+        # mod_data[0] is the moderator name and mod_data[1] is the moderator ID
+        (title, description, start_date, end_date, mod_data[0], mod_data[1], department, importance, url) 
     )
     connection.commit()
     connection.close()
 
     return {"success": True, "message": "Event created successfully."}
 
-def edit_event(admin_id, event_id, title=None, description=None, start_date=None, end_date=None, platform=None, url=None):
+def edit_event(admin_email, event_id, moderator_email=None, title=None, description=None, start_date=None, end_date=None, platform=None, importance=None, department=None, url=None):
     """
     Edit an event as an admin.
 
     Args:
-        admin_id (int): The ID of the admin editing the event.
+        admin_email (int): The ID of the admin editing the event.
         event_id (int): The ID of the event to edit.
         title (str): New title of the event.
         description (str): New description of the event.
@@ -107,9 +118,12 @@ def edit_event(admin_id, event_id, title=None, description=None, start_date=None
     Returns:
         dict: Success or error message.
     """
-    if not is_admin(admin_id):
+    if not is_admin(admin_email):
         return {"success": False, "message": "Unauthorized: Admin role required."}
 
+    if not event_id:
+        return {"success": False, "message": "Missing required fields."}
+    
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
@@ -118,6 +132,17 @@ def edit_event(admin_id, event_id, title=None, description=None, start_date=None
     if title:
         updates.append("title = ?")
         params.append(title)
+    if moderator_email:
+        mod_data = cursor.execute("SELECT name, id FROM User WHERE email = ?", (moderator_email[0],) if isinstance(moderator_email, list) else (moderator_email,)) # Ensure `moderator_email` is a single value
+        mod_data = mod_data.fetchone()
+        
+        if not mod_data:
+            connection.close()
+            return {"success": False, "message": "Moderator not found."}
+        updates.append("moderator = ?")
+        params.append(mod_data[0])  
+        updates.append("moderator_id = ?")
+        params.append(mod_data[1])  
     if description:
         updates.append("description = ?")
         params.append(description)
@@ -130,13 +155,20 @@ def edit_event(admin_id, event_id, title=None, description=None, start_date=None
     if platform:
         updates.append("platform = ?")
         params.append(platform)
+    if department:
+        updates.append("department = ?")
+        params.append(department)
+    if importance:
+        updates.append("importance = ?")
+        params.append(importance)
     if url:
         updates.append("url = ?")
         params.append(url)
 
-    params.append(event_id)
+    if not updates:
+        return {"success": False, "message": "No fields to update."} # Ensure updates list is not empty
 
-    cursor.execute(f"UPDATE Event SET {', '.join(updates)} WHERE id = ?", params)
+    cursor.execute(f"UPDATE Event SET {', '.join(updates)} WHERE id = ?", params + [event_id]) # Ensure params match placeholders
     connection.commit()
     connection.close()
 
@@ -165,90 +197,96 @@ def delete_event(admin_id, event_id):
 
     return {"success": True, "message": "Event deleted successfully."}
 
-def confirm_assistance(user_id, event_id):
+def fetch_all_events_as_admin(email):
     """
-    Confirm assistance to an event.
+    Fetch all events from the database if the user is an admin.
 
     Args:
-        user_id (int): The ID of the user confirming assistance.
-        event_id (int): The ID of the event.
+        user_id (int): The ID of the user making the request.
 
     Returns:
-        dict: Success or error message.
+        dict: A dictionary with a success flag and a list of all events, or an error message if the user is not an admin.
+    """
+    if not is_admin(email):
+        return {"success": False, "message": "Unauthorized: Admin role required."}
+
+    connection = sqlite3.connect(DATABASE)
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, title, description, start_date, end_date, moderator_id, department, importance, url FROM Event ORDER BY start_date ASC")
+    events = cursor.fetchall()
+    
+
+    events_list = []
+    for event in events:
+        cursor.execute("SELECT email FROM User WHERE id = ?", (event[5],))
+        mail = cursor.fetchone()
+        events_list.append({
+            "id": event[0],
+            "title": event[1],
+            "description": event[2],
+            "start_date": event[3],
+            "end_date": event[4],
+            "moderator_id": event[5],
+            "moderator_email": mail,
+            "department": event[6],
+            "importance": event[7],
+            "url": event[8]
+        })
+    connection.close()
+    return {"success": True, "events": events_list}
+
+def fetch_event_by_id(event_id):
+    """
+    Fetch event details by ID.
+
+    Args:
+        event_id (int): The ID of the event to fetch.
+
+    Returns:
+        dict: Event details or an error message.
     """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
-    cursor.execute(
-        "UPDATE Event SET assistance = assistance + 1 WHERE id = ?",
-        (event_id,)
-    )
-    connection.commit()
+    cursor.execute("SELECT id, title, description, start_date, end_date, moderator, moderator_id, department, importance, url FROM Event WHERE id = ?", (event_id,))
+    event = cursor.fetchone()
     connection.close()
 
-    return {"success": True, "message": "Assistance confirmed successfully."}
+    if not event:
+        return {"success": False, "message": "Event not found."}
 
-def cancel_assistance(user_id, event_id):
+    return {
+        "success": True,
+        "event": {
+            "id": event[0],
+            "title": event[1],
+            "description": event[2],
+            "start_date": event[3],
+            "end_date": event[4],
+            "moderator": event[5],
+            "moderator_id": event[6],
+            "department": event[7],
+            "importance": event[8],
+            "url": event[9]
+        }
+    }
+
+def fetch_event_id_by_details(title, start_date):
     """
-    Cancel assistance to an event.
+    Fetch event ID based on title and start date.
 
     Args:
-        user_id (int): The ID of the user canceling assistance.
-        event_id (int): The ID of the event.
+        title (str): Title of the event.
+        start_date (str): Start date of the event.
 
     Returns:
-        dict: Success or error message.
+        int: Event ID or None if not found.
     """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
-    cursor.execute(
-        "UPDATE Event SET assistance = assistance - 1 WHERE id = ? AND assistance > 0",
-        (event_id,)
-    )
-    connection.commit()
+    cursor.execute("SELECT id FROM Event WHERE title = ? AND start_date = ?", (title, start_date))
+    event = cursor.fetchone()
     connection.close()
 
-    return {"success": True, "message": "Assistance canceled successfully."}
-
-def fetch_confirmed_assistance_events(user_id):
-    """
-    Fetch events with confirmed assistance for a user.
-
-    Args:
-        user_id (int): The ID of the user.
-
-    Returns:
-        list: A list of events with confirmed assistance.
-    """
-    # Mock implementation, replace with actual database query
-    confirmed_events = [
-        {'name': 'Event 1', 'start_date': '2025-06-21'},
-        {'name': 'Event 2', 'start_date': '2025-06-22'},
-    ]
-    return confirmed_events
-
-def fetch_pending_assistance_confirmations(user_id):
-    """
-    Fetch events with pending assistance confirmations for a user.
-
-    Args:
-        user_id (int): The ID of the user.
-
-    Returns:
-        list: A list of events with pending assistance confirmations.
-    """
-    connection = sqlite3.connect(DATABASE)
-    cursor = connection.cursor()
-
-    cursor.execute(
-        "SELECT id, title, start_date FROM Event WHERE assistance = 0 AND organizer_id = ?",
-        (user_id,)
-    )
-    pending_events = cursor.fetchall()
-    connection.close()
-
-    return [
-        {"id": event[0], "title": event[1], "start_date": event[2]}
-        for event in pending_events
-    ]
+    return event[0] if event else None
