@@ -1,120 +1,83 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import Navbar from '../../components/common/navbar';
 import Footer from '../../components/common/footer';
-import EventsConfirmed from '../../components/common/eventsConfirmed';
-import EventsNotConfirmed from '../../components/common/eventsNotConfirmed';
-// import { fetchEvents } from '../../api/user/fetchEvents';
-import { validateUserToken } from '../../api/user/validateToken'
-// import { fetchPendingEvents } from '../../api/user/fetchPendingEvents';
+import { Link, useNavigate } from 'react-router-dom';
+import { fetchConfirmedEvents } from '../../api/user/fetch/fetchConfirmedEvents';
+import { fetchPendingEvents } from '../../api/user/fetch/fetchPendingEvents';
+import { fetchUpcomingEvents } from '../../api/user/fetch/fetchUpcomingEvents';
+import { fetchUserDetails } from '../../api/user/fetch/fetchUserDetails';
+import { confirmAssistance } from '../../api/user/confirm/confirmAssistance';
+import { cancelAssistance } from '../../api/user/cancel/cancelAssistance';
+import { useAuth } from '../../context/AuthContext';
 
 const Home = () => {
-  const [eventos, setEventos] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [confirmedEvents, setConfirmedEvents] = useState([]);
   const [pendingEvents, setPendingEvents] = useState([]);
-  const [showConfirmados, setShowConfirmados] = useState(false);
-  const [showSinConfirmar, setShowSinConfirmar] = useState(false);
+  const [userDepartment, setUserDepartment] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const navigate = useNavigate();
+  const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
-    // Simulación de próximos eventos (idénticos a los confirmados)
-    setTimeout(() => {
-      setEventos([
-        {
-          id: 1,
-          titulo: 'Reunión mensual',
-          descripcion: 'Reunión de seguimiento mensual con el equipo.',
-          fecha_inicio: '2025-07-10 09:00',
-          fecha_termino: '2025-07-10 11:00',
-          moderador: 'María González',
-          departamento: 'Recursos Humanos',
-          importancia: 'Alta',
-          url: 'https://meet.example.com/reunion',
-        },
-        {
-          id: 2,
-          titulo: 'Charla con líderes',
-          descripcion: 'Charla inspiradora con líderes de la industria.',
-          fecha_inicio: '2025-07-15 15:00',
-          fecha_termino: '2025-07-15 17:00',
-          moderador: 'Carlos Pérez',
-          departamento: 'Dirección',
-          importancia: 'Media',
-          url: 'https://meet.example.com/charla',
-        },
-        {
-          id: 3,
-          titulo: 'Marketing',
-          descripcion: 'Taller práctico de marketing digital.',
-          fecha_inicio: '2025-08-01 10:00',
-          fecha_termino: '2025-08-01 13:00',
-          moderador: 'Ana Torres',
-          departamento: 'Marketing',
-          importancia: 'Baja',
-          url: 'https://meet.example.com/marketing',
-        },
-      ]);
-    }, 500);
-    // Para datos reales, descomentar lo siguiente:
-    // fetchEvents(setEventos);
-  }, []);
+    if (!loading && !isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, loading, navigate]);
+
+  const fetchAll = async (token, department) => {
+    // Refresca todos los eventos
+    const upcoming = await fetchUpcomingEvents();
+    setUpcomingEvents(upcoming.events || []);
+    const confirmed = await fetchConfirmedEvents(token);
+    setConfirmedEvents(confirmed.events || []);
+    const pending = await fetchPendingEvents(token, department);
+    setPendingEvents(pending.events || []);
+  };
 
   useEffect(() => {
-    setTimeout(() => {
-      setPendingEvents([
-        {
-          id: 10,
-          titulo: 'Taller de marketing',
-          descripcion: 'Aprende estrategias de marketing digital.',
-          fecha_inicio: '2025-07-20 09:00',
-          fecha_termino: '2025-07-20 12:00',
-          moderador: 'Lucía Ramírez',
-          departamento: 'Marketing',
-          importancia: 'Alta',
-          url: 'https://meet.example.com/marketing1',
-          estado: 'pendiente'
-        },
-        {
-          id: 11,
-          titulo: 'Información',
-          descripcion: 'Sesión informativa sobre nuevos proyectos.',
-          fecha_inicio: '2025-07-25 14:00',
-          fecha_termino: '2025-07-25 15:30',
-          moderador: 'Pedro López',
-          departamento: 'Dirección',
-          importancia: 'Media',
-          url: 'https://meet.example.com/info',
-          estado: 'cancelada'
-        },
-        {
-          id: 12,
-          titulo: 'Marketing 2',
-          descripcion: 'Segunda parte del taller de marketing.',
-          fecha_inicio: '2025-08-05 10:00',
-          fecha_termino: '2025-08-05 13:00',
-          moderador: 'Ana Torres',
-          departamento: 'Marketing',
-          importancia: 'Baja',
-          url: 'https://meet.example.com/marketing2',
-          estado: 'pendiente'
-        },
-      ]);
-    }, 500);
-    // Para datos reales, descomentar lo siguiente:
-    // const token = localStorage.getItem('authToken');
-    // if (token) {
-    //   fetchPendingEvents(token, setPendingEvents);
-    // }
-  }, []);
+    if (!isAuthenticated) return;
+    const fetchData = async () => {
+      try {
+        const token = sessionStorage.getItem('authToken');
+        const userDetails = await fetchUserDetails(token);
+        const department = userDetails?.user?.department || '';
+        const email = userDetails?.user?.email || '';
+        setUserDepartment(department);
+        setUserEmail(email);
+        await fetchAll(token, department);
+      } catch (error) {
+        setUpcomingEvents([]);
+        setConfirmedEvents([]);
+        setPendingEvents([]);
+      }
+    };
+    fetchData();
+  }, [isAuthenticated]);
 
-  useEffect(() => {
-    validateUserToken();
-  }, []);
+  const handleConfirm = async (eventId) => {
+    try {
+      const token = sessionStorage.getItem('authToken');
+      await confirmAssistance({ event_id: eventId, user_email: userEmail, token });
+      await fetchAll(token, userDepartment);
+    } catch (error) {
+      alert('Error al confirmar asistencia');
+    }
+  };
 
-  const usuarioId = 1;
+  const handleCancel = async (eventId) => {
+    try {
+      const token = sessionStorage.getItem('authToken');
+      await cancelAssistance({ event_id: eventId, user_email: userEmail, token });
+      await fetchAll(token, userDepartment);
+    } catch (error) {
+      alert('Error al cancelar asistencia');
+    }
+  };
 
   return (
     <>
       <Navbar />
-
       <div style={{ minHeight: '100vh', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
         <div className="flex-grow-1">
           <div className="container text-center py-5">
@@ -127,24 +90,60 @@ const Home = () => {
                   <h3 className="text-success mb-4">⚡ Acciones rápidas</h3>
                   <div className="d-flex flex-column gap-3">
                     <Link to="/perfil" className="btn btn-outline-success px-4">👤 Mi perfil</Link>
-                    <button className="btn btn-outline-success px-4" onClick={() => setShowConfirmados(true)}>✅ Eventos confirmados</button>
-                    <button className="btn btn-outline-success px-4" onClick={() => setShowSinConfirmar(true)}>⏳ Eventos por confirmar</button>
                   </div>
                 </div>
               </div>
               <div className="col-12 col-md-6">
                 <div className="bg-white bg-opacity-75 p-4 rounded-4 shadow border border-success h-100">
                   <h3 className="text-success mb-4">📢 Próximos eventos</h3>
-                  <ul className="list-group list-group-flush mt-3">
-                    {eventos.length === 0 ? (
+                  <ul
+                    className="list-group list-group-flush mt-3"
+                    style={{
+                      maxHeight: '320px', // 4 items aprox. (4 x 80px)
+                      overflowY: upcomingEvents.length > 4 ? 'auto' : 'unset',
+                      minHeight: '80px',
+                    }}
+                  >
+                    {upcomingEvents.length === 0 ? (
                       <li className="list-group-item text-muted">No hay eventos próximos.</li>
                     ) : (
-                      eventos.map((ev, i) => (
-                        <li className="list-group-item" key={ev.id}>
-                          <div>📅 <strong>{ev.titulo}</strong> <span className="text-muted">({ev.fecha_inicio} - {ev.fecha_termino})</span></div>
-                          <div className="text-muted small mt-1">{ev.descripcion}</div>
-                          <div className="text-muted small">Moderador: <strong>{ev.moderador}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
-                          <div className="text-muted small">Enlace: <a href={ev.url} target="_blank" rel="noopener noreferrer">{ev.url}</a></div>
+                      upcomingEvents.map((ev, i) => (
+                        <li className="list-group-item" key={i}>
+                          <div>📅 <strong>{ev.title}</strong> - {ev.start_date}</div>
+                          {ev.department && (
+                            <div className="text-muted small">Departamento: <strong>{ev.department}</strong></div>
+                          )}
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                </div>
+              </div>
+              <div className="col-12 col-md-6">
+                <div className="bg-white bg-opacity-75 p-4 rounded-4 shadow border border-success h-100">
+                  <h3 className="text-success mb-4">✅ Eventos confirmados</h3>
+                  <ul
+                    className="list-group list-group-flush mt-3"
+                    style={{
+                      maxHeight: '320px',
+                      overflowY: confirmedEvents.length > 4 ? 'auto' : 'unset',
+                      minHeight: '80px',
+                      overflowX: 'hidden',
+                      display: 'block',
+                    }}
+                  >
+                    {confirmedEvents.length === 0 ? (
+                      <li className="list-group-item text-muted">No hay eventos confirmados.</li>
+                    ) : (
+                      confirmedEvents.map((ev, i) => (
+                        <li className="list-group-item" key={i}>
+                          <div>📅 <strong>{ev.title}</strong> - {ev.start_date}</div>
+                          {ev.department && (
+                            <div className="text-muted small">Departamento: <strong>{ev.department}</strong></div>
+                          )}
+                          <button className="btn btn-danger btn-sm mt-2" onClick={() => handleCancel(ev.id)}>
+                            Cancelar asistencia
+                          </button>
                         </li>
                       ))
                     )}
@@ -154,16 +153,28 @@ const Home = () => {
               <div className="col-12 col-md-6">
                 <div className="bg-white bg-opacity-75 p-4 rounded-4 shadow border border-success h-100">
                   <h3 className="text-success mb-4">⏳ Eventos pendientes</h3>
-                  <ul className="list-group list-group-flush mt-3">
+                  <ul
+                    className="list-group list-group-flush mt-3"
+                    style={{
+                      maxHeight: '320px',
+                      overflowY: pendingEvents.length > 4 ? 'auto' : 'unset',
+                      minHeight: '80px',
+                    }}
+                  >
                     {pendingEvents.length === 0 ? (
                       <li className="list-group-item text-muted">No hay eventos pendientes.</li>
                     ) : (
                       pendingEvents.map((ev, i) => (
-                        <li className="list-group-item" key={ev.id}>
-                          <div>📅 <strong>{ev.titulo}</strong> <span className="text-muted">({ev.fecha_inicio} - {ev.fecha_termino})</span></div>
-                          <div className="text-muted small mt-1">{ev.descripcion}</div>
-                          <div className="text-muted small">Moderador: <strong>{ev.moderador}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
-                          <div className="text-muted small">Enlace: <a href={ev.url} target="_blank" rel="noopener noreferrer">{ev.url}</a></div>
+                        <li className="list-group-item" key={i}>
+                          <div>📅 <strong>{ev.title}</strong> - {ev.start_date}</div>
+                          {ev.department && (
+                            <div className="text-muted small">Departamento: <strong>{ev.department}</strong></div>
+                          )}
+                          {ev.can_confirm && (
+                            <button className="btn btn-success btn-sm mt-2" onClick={() => handleConfirm(ev.id)}>
+                              Confirmar asistencia
+                            </button>
+                          )}
                         </li>
                       ))
                     )}
@@ -173,8 +184,6 @@ const Home = () => {
             </div>
           </div>
         </div>
-        {showConfirmados && (<EventsConfirmed usuarioId={usuarioId} onClose={() => setShowConfirmados(false)} />)}
-        {showSinConfirmar && (<EventsNotConfirmed usuarioId={usuarioId} onClose={() => setShowSinConfirmar(false)} />)}
         <Footer />
       </div>
     </>

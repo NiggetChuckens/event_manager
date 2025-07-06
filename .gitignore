@@ -29,3 +29,5 @@ frontend/.env.development.local
 eventos.db
 src/backend/eventos.db
 src/backend/db/eventos.db
+src/backend/functions/__pycache__/event_management.cpython-313.pyc
+src/backend/functions/__pycache__/user_management.cpython-313.pyc

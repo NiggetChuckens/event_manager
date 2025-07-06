@@ -1,50 +1,34 @@
 import { useState } from "react";
 import Footer from '../../../components/common/footer';
 import NavbarAdmin from '../../../components/admin/navbar';
-import { createUser } from '../../../api/admin/createUser';
-import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
     password: "",
-    admin: false, 
+    admin: "user",
+    departamento: ""
   });
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "admin") {
-      setFormData({ ...formData, admin: value }); 
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('authToken');
-    const decodedToken = jwtDecode(token);
-    const adminEmail = decodedToken.email;
-
-    try {
-      const response = await createUser(
-        formData.nombre,
-        formData.email,
-        formData.password,
-        formData.admin,
-        adminEmail
-      );
-      alert(response.message);
-      navigate('/admin/users');
-    } catch (error) {
-      console.error("Error creating user:", error);
-      alert("Failed to create user. Please try again.");
-    }
+    console.log("Usuario enviado:", formData);
+    // Aquí iría la lógica de envío al backend
   };
+
+  const departamentos = [
+    "Recursos Humanos",
+    "TI",
+    "Marketing",
+    "Finanzas",
+    "Logística"
+  ];
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -98,8 +82,24 @@ const CreateUser = () => {
               required
             >
               <option value="user">Usuario</option>
-              <option value="moderator">Moderator</option>
+              <option value="moderator">Moderador</option>
               <option value="admin">Administrador</option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Departamento</label>
+            <select
+              name="departamento"
+              className="form-select"
+              value={formData.departamento}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione un departamento</option>
+              {departamentos.map((dep, index) => (
+                <option key={index} value={dep}>{dep}</option>
+              ))}
             </select>
           </div>
 

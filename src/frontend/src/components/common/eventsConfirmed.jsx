@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { fetchEvents } from '../../api/user/fetch/fetchConfirmedEvents';
 
 const EventsConfirmed = ({ usuarioId, onClose }) => {
     const [eventos, setEventos] = useState([]);
@@ -57,13 +58,7 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:5000/eventos-confirmados?usuario_id=${usuarioId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                const data = await response.json();
-                setEventos(data.eventos || []);
+                await fetchEvents(setEventos);
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching confirmed events:', error);

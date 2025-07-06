@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { loginUser } from '../api/Login_handler';
-import { jwtDecode } from 'jwt-decode';
-
+  
 const Login = () => {
   const [form, setForm] = useState({
     correo: '',
@@ -18,9 +17,11 @@ const Login = () => {
     e.preventDefault();
     const result = await loginUser(form.correo, form.contraseña);
     if (result.success) {
-      const token = localStorage.getItem('authToken');
-      const decodedToken = jwtDecode(token);
-      const userType = decodedToken.rol;
+      // Store token in sessionStorage
+      if (result.token) {
+        sessionStorage.setItem('authToken', result.token);
+      }
+      const userType = result.userType; 
 
       if (userType === 'admin') {
         navigate('/admin/home');
