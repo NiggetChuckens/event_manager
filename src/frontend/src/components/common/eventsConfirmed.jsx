@@ -13,33 +13,36 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
             setEventos([
                 {
                     id: 1,
-                    nombre: 'Reunion mensual',
-                    fecha: '2025-07-10',
+                    titulo: 'Reunión mensual',
                     descripcion: 'Reunión de seguimiento mensual con el equipo.',
-                    categoria: 'Reunión',
+                    fecha_inicio: '2025-07-10 09:00',
+                    fecha_termino: '2025-07-10 11:00',
+                    moderador: 'María González',
                     departamento: 'Recursos Humanos',
                     importancia: 'Alta',
-                    presentador: 'María González'
+                    url: 'https://meet.example.com/reunion',
                 },
                 {
                     id: 2,
-                    nombre: 'Charla con lideres',
-                    fecha: '2025-07-15',
+                    titulo: 'Charla con líderes',
                     descripcion: 'Charla inspiradora con líderes de la industria.',
-                    categoria: 'Charla',
+                    fecha_inicio: '2025-07-15 15:00',
+                    fecha_termino: '2025-07-15 17:00',
+                    moderador: 'Carlos Pérez',
                     departamento: 'Dirección',
                     importancia: 'Media',
-                    presentador: 'Carlos Pérez'
+                    url: 'https://meet.example.com/charla',
                 },
                 {
                     id: 3,
-                    nombre: 'Marketing',
-                    fecha: '2025-08-01',
+                    titulo: 'Marketing',
                     descripcion: 'Taller práctico de marketing digital.',
-                    categoria: 'Taller',
+                    fecha_inicio: '2025-08-01 10:00',
+                    fecha_termino: '2025-08-01 13:00',
+                    moderador: 'Ana Torres',
                     departamento: 'Marketing',
                     importancia: 'Baja',
-                    presentador: 'Ana Torres'
+                    url: 'https://meet.example.com/marketing',
                 },
             ]);
             setLoading(false);
@@ -106,10 +109,10 @@ const EventsConfirmed = ({ usuarioId, onClose }) => {
                             {eventos.map(ev => (
                             <li className="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center" key={ev.id}>
                                 <div>
-                                    <span>🎉 <strong>{ev.nombre}</strong> <span className="text-muted">({ev.fecha})</span></span>
+                                    <span>🎉 <strong>{ev.titulo}</strong> <span className="text-muted">({ev.fecha_inicio} - {ev.fecha_termino})</span></span>
                                     <div className="text-muted small mt-1">{ev.descripcion}</div>
-                                    <div className="text-muted small">Categoría: <strong>{ev.categoria}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
-                                    <div className="text-muted small">Presenta: <strong>{ev.presentador}</strong></div>
+                                    <div className="text-muted small">Moderador: <strong>{ev.moderador}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
+                                    <div className="text-muted small">Enlace: <a href={ev.url} target="_blank" rel="noopener noreferrer">{ev.url}</a></div>
                                 </div>
                                 <button className="btn btn-outline-danger btn-sm mt-2 mt-md-0" onClick={() => handleCancelarClick(ev)}>
                                     Cancelar asistencia

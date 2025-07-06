@@ -13,11 +13,12 @@ const Perfil = () => {
             setUsuario({
                 nombre: 'Juan Pérez',
                 correo: 'juan.perez@email.com',
-                edad: 28,
-                direccion: 'Calle Falsa 123',
-                fechaNacimiento: '1997-05-12',
                 rol: 'Usuario',
-                fechaRegistro: '2024-01-15'
+                departamento: 'Recursos Humanos',
+                fechaCreacion: '2024-01-01',
+                fechaActualizacion: '2024-07-01',
+                creadoPor: 'admin@empresa.com',
+                actualizadoPor: 'soporte@empresa.com'
             });
         }, 500);
         // Para datos reales, descomentar lo siguiente:
@@ -50,11 +51,12 @@ const Perfil = () => {
                             <ul className="list-group list-group-flush mb-4">
                                 <li className="list-group-item bg-transparent"><span className="fw-bold">🧑 Nombre:</span> {usuario.nombre}</li>
                                 <li className="list-group-item bg-transparent"><span className="fw-bold">📧 Correo:</span> {usuario.correo}</li>
-                                <li className="list-group-item bg-transparent"><span className="fw-bold">🎂 Edad:</span> {usuario.edad || '-'}</li>
-                                <li className="list-group-item bg-transparent"><span className="fw-bold">🏠 Dirección:</span> {usuario.direccion || '-'}</li>
-                                <li className="list-group-item bg-transparent"><span className="fw-bold">📅 Fecha de nacimiento:</span> {usuario.fechaNacimiento || '-'}</li>
-                                <li className="list-group-item bg-transparent"><span className="fw-bold">🔑 Rol:</span> {usuario.rol || 'Usuario'}</li>
-                                <li className="list-group-item bg-transparent"><span className="fw-bold">🗓️ Registro:</span> {usuario.fechaRegistro || '-'}</li>
+                                <li className="list-group-item bg-transparent"><span className="fw-bold">🔑 Rol:</span> {usuario.rol || '-'}</li>
+                                <li className="list-group-item bg-transparent"><span className="fw-bold">🏢 Departamento:</span> {usuario.departamento || '-'}</li>
+                                <li className="list-group-item bg-transparent"><span className="fw-bold">🗓️ Fecha de creación:</span> {usuario.fechaCreacion || '-'}</li>
+                                <li className="list-group-item bg-transparent"><span className="fw-bold">📝 Fecha de actualización:</span> {usuario.fechaActualizacion || '-'}</li>
+                                <li className="list-group-item bg-transparent"><span className="fw-bold">👤 Creado por:</span> {usuario.creadoPor || '-'}</li>
+                                <li className="list-group-item bg-transparent"><span className="fw-bold">� Actualizado por:</span> {usuario.actualizadoPor || '-'}</li>
                             </ul>
                             ) : (
                             <div className="text-muted">Cargando datos del usuario...</div>

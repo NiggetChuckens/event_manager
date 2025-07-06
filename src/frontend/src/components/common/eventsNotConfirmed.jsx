@@ -8,9 +8,42 @@ const EventsNotConfirmed = ({ usuarioId, onClose }) => {
         // Simulación de eventos pendientes/cancelados para pruebas visuales
         setTimeout(() => {
             setEventos([
-                { id: 10, nombre: 'Taller de marketing', fecha: '2025-07-20', estado: 'pendiente', descripcion: 'Aprende estrategias de marketing digital.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Alta', presentador: 'Lucía Ramírez' },
-                { id: 11, nombre: 'Informacion', fecha: '2025-07-25', estado: 'cancelada', descripcion: 'Sesión informativa sobre nuevos proyectos.', categoria: 'Sesión', departamento: 'Dirección', importancia: 'Media', presentador: 'Pedro López' },
-                { id: 12, nombre: 'Marketing 2', fecha: '2025-08-05', estado: 'pendiente', descripcion: 'Segunda parte del taller de marketing.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Baja', presentador: 'Ana Torres' },
+                {
+                    id: 10,
+                    titulo: 'Taller de marketing',
+                    descripcion: 'Aprende estrategias de marketing digital.',
+                    fecha_inicio: '2025-07-20 09:00',
+                    fecha_termino: '2025-07-20 12:00',
+                    moderador: 'Lucía Ramírez',
+                    departamento: 'Marketing',
+                    importancia: 'Alta',
+                    url: 'https://meet.example.com/marketing1',
+                    estado: 'pendiente'
+                },
+                {
+                    id: 11,
+                    titulo: 'Información',
+                    descripcion: 'Sesión informativa sobre nuevos proyectos.',
+                    fecha_inicio: '2025-07-25 14:00',
+                    fecha_termino: '2025-07-25 15:30',
+                    moderador: 'Pedro López',
+                    departamento: 'Dirección',
+                    importancia: 'Media',
+                    url: 'https://meet.example.com/info',
+                    estado: 'cancelada'
+                },
+                {
+                    id: 12,
+                    titulo: 'Marketing 2',
+                    descripcion: 'Segunda parte del taller de marketing.',
+                    fecha_inicio: '2025-08-05 10:00',
+                    fecha_termino: '2025-08-05 13:00',
+                    moderador: 'Ana Torres',
+                    departamento: 'Marketing',
+                    importancia: 'Baja',
+                    url: 'https://meet.example.com/marketing2',
+                    estado: 'pendiente'
+                },
             ]);
             setLoading(false);
         }, 500);
@@ -64,10 +97,10 @@ const EventsNotConfirmed = ({ usuarioId, onClose }) => {
                             {eventos.map(ev => (
                             <li className="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center" key={ev.id}>
                                 <div>
-                                    <span>{ev.estado === 'pendiente' ? '⏳' : '❌'} <strong>{ev.nombre}</strong> <span className="text-muted">({ev.fecha})</span></span>
+                                    <span>{ev.estado === 'pendiente' ? '⏳' : '❌'} <strong>{ev.titulo}</strong> <span className="text-muted">({ev.fecha_inicio} - {ev.fecha_termino})</span></span>
                                     <div className="text-muted small mt-1">{ev.descripcion}</div>
-                                    <div className="text-muted small">Categoría: <strong>{ev.categoria}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
-                                    <div className="text-muted small">Presenta: <strong>{ev.presentador}</strong></div>
+                                    <div className="text-muted small">Moderador: <strong>{ev.moderador}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
+                                    <div className="text-muted small">Enlace: <a href={ev.url} target="_blank" rel="noopener noreferrer">{ev.url}</a></div>
                                 </div>
                                 {['pendiente', 'cancelada'].includes(ev.estado) && (
                                 <button className="btn btn-success btn-sm mt-2 mt-md-0" onClick={() => confirmarAsistencia(ev.id)}>

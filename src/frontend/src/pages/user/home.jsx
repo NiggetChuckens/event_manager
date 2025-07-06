@@ -15,12 +15,42 @@ const Home = () => {
   const [showSinConfirmar, setShowSinConfirmar] = useState(false);
 
   useEffect(() => {
-    // Simulación de próximos eventos (idénticos a los confirmados, con presentador)
+    // Simulación de próximos eventos (idénticos a los confirmados)
     setTimeout(() => {
       setEventos([
-        { nombre: 'Reunion mensual', fecha_inicio: '2025-07-10', descripcion: 'Reunión de seguimiento mensual con el equipo.', categoria: 'Reunión', departamento: 'Recursos Humanos', importancia: 'Alta', presentador: 'María González' },
-        { nombre: 'Charla con lideres', fecha_inicio: '2025-07-15', descripcion: 'Charla inspiradora con líderes de la industria.', categoria: 'Charla', departamento: 'Dirección', importancia: 'Media', presentador: 'Carlos Pérez' },
-        { nombre: 'Marketing', fecha_inicio: '2025-08-01', descripcion: 'Taller práctico de marketing digital.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Baja', presentador: 'Ana Torres' },
+        {
+          id: 1,
+          titulo: 'Reunión mensual',
+          descripcion: 'Reunión de seguimiento mensual con el equipo.',
+          fecha_inicio: '2025-07-10 09:00',
+          fecha_termino: '2025-07-10 11:00',
+          moderador: 'María González',
+          departamento: 'Recursos Humanos',
+          importancia: 'Alta',
+          url: 'https://meet.example.com/reunion',
+        },
+        {
+          id: 2,
+          titulo: 'Charla con líderes',
+          descripcion: 'Charla inspiradora con líderes de la industria.',
+          fecha_inicio: '2025-07-15 15:00',
+          fecha_termino: '2025-07-15 17:00',
+          moderador: 'Carlos Pérez',
+          departamento: 'Dirección',
+          importancia: 'Media',
+          url: 'https://meet.example.com/charla',
+        },
+        {
+          id: 3,
+          titulo: 'Marketing',
+          descripcion: 'Taller práctico de marketing digital.',
+          fecha_inicio: '2025-08-01 10:00',
+          fecha_termino: '2025-08-01 13:00',
+          moderador: 'Ana Torres',
+          departamento: 'Marketing',
+          importancia: 'Baja',
+          url: 'https://meet.example.com/marketing',
+        },
       ]);
     }, 500);
     // Para datos reales, descomentar lo siguiente:
@@ -30,9 +60,42 @@ const Home = () => {
   useEffect(() => {
     setTimeout(() => {
       setPendingEvents([
-        { id: 10, nombre: 'Taller de marketing', fecha_inicio: '2025-07-20', estado: 'pendiente', descripcion: 'Aprende estrategias de marketing digital.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Alta', presentador: 'Lucía Ramírez' },
-        { id: 11, nombre: 'Informacion', fecha_inicio: '2025-07-25', estado: 'cancelada', descripcion: 'Sesión informativa sobre nuevos proyectos.', categoria: 'Sesión', departamento: 'Dirección', importancia: 'Media', presentador: 'Pedro López' },
-        { id: 12, nombre: 'Marketing 2', fecha_inicio: '2025-08-05', estado: 'pendiente', descripcion: 'Segunda parte del taller de marketing.', categoria: 'Taller', departamento: 'Marketing', importancia: 'Baja', presentador: 'Ana Torres' },
+        {
+          id: 10,
+          titulo: 'Taller de marketing',
+          descripcion: 'Aprende estrategias de marketing digital.',
+          fecha_inicio: '2025-07-20 09:00',
+          fecha_termino: '2025-07-20 12:00',
+          moderador: 'Lucía Ramírez',
+          departamento: 'Marketing',
+          importancia: 'Alta',
+          url: 'https://meet.example.com/marketing1',
+          estado: 'pendiente'
+        },
+        {
+          id: 11,
+          titulo: 'Información',
+          descripcion: 'Sesión informativa sobre nuevos proyectos.',
+          fecha_inicio: '2025-07-25 14:00',
+          fecha_termino: '2025-07-25 15:30',
+          moderador: 'Pedro López',
+          departamento: 'Dirección',
+          importancia: 'Media',
+          url: 'https://meet.example.com/info',
+          estado: 'cancelada'
+        },
+        {
+          id: 12,
+          titulo: 'Marketing 2',
+          descripcion: 'Segunda parte del taller de marketing.',
+          fecha_inicio: '2025-08-05 10:00',
+          fecha_termino: '2025-08-05 13:00',
+          moderador: 'Ana Torres',
+          departamento: 'Marketing',
+          importancia: 'Baja',
+          url: 'https://meet.example.com/marketing2',
+          estado: 'pendiente'
+        },
       ]);
     }, 500);
     // Para datos reales, descomentar lo siguiente:
@@ -77,11 +140,11 @@ const Home = () => {
                       <li className="list-group-item text-muted">No hay eventos próximos.</li>
                     ) : (
                       eventos.map((ev, i) => (
-                        <li className="list-group-item" key={i}>
-                          <div>📅 <strong>{ev.nombre}</strong> - {ev.fecha_inicio}</div>
+                        <li className="list-group-item" key={ev.id}>
+                          <div>📅 <strong>{ev.titulo}</strong> <span className="text-muted">({ev.fecha_inicio} - {ev.fecha_termino})</span></div>
                           <div className="text-muted small mt-1">{ev.descripcion}</div>
-                          <div className="text-muted small">Categoría: <strong>{ev.categoria}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
-                          <div className="text-muted small">Presenta: <strong>{ev.presentador}</strong></div>
+                          <div className="text-muted small">Moderador: <strong>{ev.moderador}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
+                          <div className="text-muted small">Enlace: <a href={ev.url} target="_blank" rel="noopener noreferrer">{ev.url}</a></div>
                         </li>
                       ))
                     )}
@@ -96,11 +159,11 @@ const Home = () => {
                       <li className="list-group-item text-muted">No hay eventos pendientes.</li>
                     ) : (
                       pendingEvents.map((ev, i) => (
-                        <li className="list-group-item" key={i}>
-                          <div>📅 <strong>{ev.nombre}</strong> - {ev.fecha_inicio}</div>
+                        <li className="list-group-item" key={ev.id}>
+                          <div>📅 <strong>{ev.titulo}</strong> <span className="text-muted">({ev.fecha_inicio} - {ev.fecha_termino})</span></div>
                           <div className="text-muted small mt-1">{ev.descripcion}</div>
-                          <div className="text-muted small">Categoría: <strong>{ev.categoria}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
-                          <div className="text-muted small">Presenta: <strong>{ev.presentador}</strong></div>
+                          <div className="text-muted small">Moderador: <strong>{ev.moderador}</strong> | Departamento: <strong>{ev.departamento}</strong> | Importancia: <strong>{ev.importancia}</strong></div>
+                          <div className="text-muted small">Enlace: <a href={ev.url} target="_blank" rel="noopener noreferrer">{ev.url}</a></div>
                         </li>
                       ))
                     )}

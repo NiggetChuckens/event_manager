@@ -4,9 +4,12 @@ const EditProfile = ({ usuario, onClose, onUpdate }) => {
     const [form, setForm] = useState({
         nombre: usuario?.nombre || '',
         correo: usuario?.correo || '',
-        edad: usuario?.edad || '',
-        direccion: usuario?.direccion || '',
-        fechaNacimiento: usuario?.fechaNacimiento || '',
+        rol: usuario?.rol || '',
+        departamento: usuario?.departamento || '',
+        fechaCreacion: usuario?.fechaCreacion || '',
+        fechaActualizacion: usuario?.fechaActualizacion || '',
+        creadoPor: usuario?.creadoPor || '',
+        actualizadoPor: usuario?.actualizadoPor || ''
     });
 
     const handleChange = (e) => {
@@ -47,16 +50,28 @@ const EditProfile = ({ usuario, onClose, onUpdate }) => {
                                 <input type="email" className="form-control" name="correo" value={form.correo} onChange={handleChange} required />
                             </div>
                             <div className="mb-3">
-                                <label className="form-label">🎂 Edad</label>
-                                <input type="number" className="form-control" name="edad" value={form.edad} onChange={handleChange} min="0" />
+                                <label className="form-label">🔑 Rol</label>
+                                <input type="text" className="form-control" name="rol" value={form.rol} onChange={handleChange} />
                             </div>
                             <div className="mb-3">
-                                <label className="form-label">🏠 Dirección</label>
-                                <input type="text" className="form-control" name="direccion" value={form.direccion} onChange={handleChange} />
+                                <label className="form-label">🏢 Departamento</label>
+                                <input type="text" className="form-control" name="departamento" value={form.departamento} onChange={handleChange} />
                             </div>
                             <div className="mb-3">
-                                <label className="form-label">📅 Fecha de nacimiento</label>
-                                <input type="date" className="form-control" name="fechaNacimiento" value={form.fechaNacimiento} onChange={handleChange} />
+                                <label className="form-label">🗓️ Fecha de creación</label>
+                                <input type="date" className="form-control" name="fechaCreacion" value={form.fechaCreacion} onChange={handleChange} />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">� Fecha de actualización</label>
+                                <input type="date" className="form-control" name="fechaActualizacion" value={form.fechaActualizacion} onChange={handleChange} />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">👤 Creado por</label>
+                                <input type="text" className="form-control" name="creadoPor" value={form.creadoPor} onChange={handleChange} />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">👤 Actualizado por</label>
+                                <input type="text" className="form-control" name="actualizadoPor" value={form.actualizadoPor} onChange={handleChange} />
                             </div>
                         </div>
                         <div className="modal-footer">
