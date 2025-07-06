@@ -30,7 +30,7 @@ const CreateEvent = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-        <Navbar />
+      <Navbar />
       <div className="container py-5 flex-grow-1">
         <h2 className="mb-4">Crear Nuevo Evento</h2>
 
@@ -88,14 +88,16 @@ const CreateEvent = () => {
               <label className="form-label">Duración</label>
               <div className="input-group">
                 <input
-                  type="time"
+                  type="number"
                   name="duracion"
                   className="form-control"
+                  placeholder="Ej: 45"
                   value={formData.duracion}
                   onChange={handleChange}
                   min="1"
                   required
                 />
+                <span className="input-group-text">/</span>
                 <select
                   name="unidadDuracion"
                   className="form-select"
@@ -161,10 +163,9 @@ const CreateEvent = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary mt-3">Guardar evento</button>
+          <button type="submit" className="btn btn-success mt-3">Guardar evento</button>
         </form>
       </div>
-
       <Footer />
     </div>
   );

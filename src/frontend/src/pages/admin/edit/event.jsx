@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Footer from '../../../components/common/footer';
 import Navbar from '../../../components/admin/navbar';
 
-const CreateEvent = () => {
+const EditEvent = () => {
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
@@ -25,14 +25,14 @@ const CreateEvent = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Evento enviado:', formData);
+    console.log('Evento actualizado:', formData);
   };
 
   return (
     <div className="d-flex flex-column min-vh-100">
-        <Navbar />
+      <Navbar />
       <div className="container py-5 flex-grow-1">
-        <h2 className="mb-4">Crear Nuevo Evento</h2>
+        <h2 className="mb-4">Editar Evento</h2>
 
         <form onSubmit={handleSubmit} className="bg-light p-4 rounded-4 shadow">
           <div className="mb-3">
@@ -88,14 +88,16 @@ const CreateEvent = () => {
               <label className="form-label">Duración</label>
               <div className="input-group">
                 <input
-                  type="time"
+                  type="number"
                   name="duracion"
                   className="form-control"
+                  placeholder="Ej: 60"
                   value={formData.duracion}
                   onChange={handleChange}
                   min="1"
                   required
                 />
+                <span className="input-group-text">/</span>
                 <select
                   name="unidadDuracion"
                   className="form-select"
@@ -161,13 +163,12 @@ const CreateEvent = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary mt-3">Guardar Cambios</button>
+          <button type="submit" className="btn btn-success mt-3">Guardar Cambios</button>
         </form>
       </div>
-
       <Footer />
     </div>
   );
 };
 
-export default CreateEvent;
+export default EditEvent;
