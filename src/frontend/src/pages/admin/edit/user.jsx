@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Footer from '../../../components/common/footer';
 import NavbarAdmin from '../../../components/admin/navbar';
-import { fetchUserById, updateUser } from '../../../api/admin/editUser';
+import { fetchUserById, updateUser } from '../../../api/admin/edit/editUser';
 
 const EditUserPage = () => {
   const { id } = useParams();

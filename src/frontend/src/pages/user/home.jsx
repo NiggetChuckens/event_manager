@@ -5,12 +5,12 @@ import EventsNotConfirmed from '../../components/common/eventsNotConfirmed';
 
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { fetchEvents } from '../../api/user/fetchEvents';
-import { validateUserToken } from '../../api/user/validateToken'
-import { fetchPendingEvents } from '../../api/user/fetchPendingEvents';
-import { fetchUpcomingEvents } from '../../api/user/fetchUpcomingEvents';
-import { fetchConfirmedAssistanceEvents } from '../../api/user/fetchConfirmedAssistanceEvents';
-import { fetchPendingAssistanceConfirmations } from '../../api/user/fetchPendingAssistanceConfirmations';
+import { fetchEvents } from '../../api/user/fetch/fetchEvents';
+import { validateUserToken } from '../../api/user/validate/validateToken';
+import { fetchPendingEvents } from '../../api/user/fetch/fetchPendingEvents';
+import { fetchUpcomingEvents } from '../../api/user/fetch/fetchUpcomingEvents';
+import { fetchConfirmedAssistanceEvents } from '../../api/user/fetch/fetchConfirmedAssistanceEvents';
+import { fetchPendingAssistanceConfirmations } from '../../api/user/fetch/fetchPendingAssistanceConfirmations';
 
 const Home = () => {
   

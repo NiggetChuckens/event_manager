@@ -23,7 +23,7 @@ class Database:
             manager_name TEXT NOT NULL,
             manager_email TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(name), UNIQUE(manager_email),
+            UNIQUE(manager_email),
             FOREIGN KEY (manager_name) REFERENCES User(name) ON DELETE SET NULL,
             FOREIGN KEY (manager_email) REFERENCES User(email) ON DELETE SET NULL
         )

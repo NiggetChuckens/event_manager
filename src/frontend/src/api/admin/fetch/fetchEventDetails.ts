@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../apiRoute';
+import { API_BASE_URL } from '../../apiRoute';
 
 export const fetchEventDetails = async (eventId: number): Promise<any> => {
   try {

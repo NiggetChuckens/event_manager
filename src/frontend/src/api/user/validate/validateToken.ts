@@ -1,4 +1,4 @@
-import { validateToken } from '../admin/validateToken';
+import { validateToken } from '../../../api/admin/validate/validateToken';
 
 export const validateUserToken = async () => {
   try {

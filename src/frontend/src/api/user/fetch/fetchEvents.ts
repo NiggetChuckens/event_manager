@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../apiRoute';
+import { API_BASE_URL } from '../../apiRoute';
 
 export const fetchEvents = async (setEventos: Function) => {
   try {

@@ -1,4 +1,5 @@
-import sqlite3, os, time
+import sqlite3, os
+from datetime import datetime
 
 DATABASE = os.path.join(os.path.dirname(__file__), '..', os.environ.get("DB_NAME"))
 
@@ -17,7 +18,7 @@ def fetch_upcoming_events():
     connection.close()
 
     events_list = [
-        {"id": event[0], "title": event[1], "start_date": event[2]}
+        {"id": event[0], "title": event[1], "start_date": datetime.strptime(event[2], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[2] else event[2]}
         for event in events
     ]
 
@@ -174,18 +175,18 @@ def edit_event(admin_email, event_id, moderator_email=None, title=None, descript
 
     return {"success": True, "message": "Event updated successfully."}
 
-def delete_event(admin_id, event_id):
+def delete_event(admin_email, event_id):
     """
     Delete an event as an admin.
 
     Args:
-        admin_id (int): The ID of the admin deleting the event.
+        admin_email (str): The email of the admin deleting the event.
         event_id (int): The ID of the event to delete.
 
     Returns:
         dict: Success or error message.
     """
-    if not is_admin(admin_id):
+    if not is_admin(admin_email):
         return {"success": False, "message": "Unauthorized: Admin role required."}
 
     connection = sqlite3.connect(DATABASE)
@@ -220,12 +221,18 @@ def fetch_all_events_as_admin(email):
     for event in events:
         cursor.execute("SELECT email FROM User WHERE id = ?", (event[5],))
         mail = cursor.fetchone()
+        try:
+            start_disp = datetime.strptime(event[3], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[3] else event[3]
+            end_disp = datetime.strptime(event[4], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[4] else event[4]
+        except Exception:
+            start_disp = event[3]
+            end_disp = event[4]
         events_list.append({
             "id": event[0],
             "title": event[1],
             "description": event[2],
-            "start_date": event[3],
-            "end_date": event[4],
+            "start_date": start_disp,
+            "end_date": end_disp,
             "moderator_id": event[5],
             "moderator_email": mail,
             "department": event[6],
@@ -255,14 +262,21 @@ def fetch_event_by_id(event_id):
     if not event:
         return {"success": False, "message": "Event not found."}
 
+    try:
+        start_disp = datetime.strptime(event[3], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[3] else event[3]
+        end_disp = datetime.strptime(event[4], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[4] else event[4]
+    except Exception:
+        start_disp = event[3]
+        end_disp = event[4]
+
     return {
         "success": True,
         "event": {
             "id": event[0],
             "title": event[1],
             "description": event[2],
-            "start_date": event[3],
-            "end_date": event[4],
+            "start_date": start_disp,
+            "end_date": end_disp,
             "moderator": event[5],
             "moderator_id": event[6],
             "department": event[7],

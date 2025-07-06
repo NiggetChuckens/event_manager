@@ -1,23 +1,36 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import NavbarAdmin from '../../components/admin/navbar';
 import Footer from '../../components/common/footer';
+import { fetchDepartments } from '../../api/admin/fetch/fetchDepartments';
+import { deleteDepartment } from '../../api/admin/delete/deleteDepartment';
 
 const AdminDepartments = () => {
-  // Datos simulados; luego se puede conectar a backend con useEffect.
-  const departamentos = [
-    {
-      id: 1,
-      name: 'Recursos Humanos',
-      manager_name: 'María López',
-      manager_email: 'maria@example.com',
-    },
-    {
-      id: 2,
-      name: 'TI',
-      manager_name: 'Carlos Núñez',
-      manager_email: 'carlos@example.com',
-    },
-  ];
+  const [departamentos, setDepartamentos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getDepartments = async () => {
+      const data = await fetchDepartments();
+      setDepartamentos(data);
+      setLoading(false);
+    };
+    getDepartments();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este departamento?')) {
+      const result = await deleteDepartment(id);
+      if (result.success) {
+        setDepartamentos(departamentos.filter(dep => dep.id !== id));
+      } else {
+        alert(result.message || 'Error al eliminar el departamento.');
+      }
+    }
+  };
+
+  if (loading) return <div className="container py-5">Cargando departamentos...</div>;
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -46,8 +59,8 @@ const AdminDepartments = () => {
                 <td>{dep.manager_name}</td>
                 <td>{dep.manager_email}</td>
                 <td>
-                  <button className="btn btn-sm btn-outline-primary me-2">Editar</button>
-                  <button className="btn btn-sm btn-outline-danger">Eliminar</button>
+                  <button className="btn btn-sm btn-outline-primary me-2" onClick={() => navigate(`/admin/departments/edit/${dep.id}`)}>Editar</button>
+                  <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(dep.id)}>Eliminar</button>
                 </td>
               </tr>
             ))}

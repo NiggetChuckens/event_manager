@@ -2,8 +2,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Footer from '../../components/common/footer';
 import NavbarAdmin from '../../components/admin/navbar';
-import { fetchAllEvents } from '../../api/admin/fetchEvents';
-import { editEvent } from '../../api/admin/editEvent';
+import { fetchAllEvents } from '../../api/admin/fetch/fetchEvents';
+import { editEvent } from '../../api/admin/edit/editEvent';
+import { deleteEvent } from '../../api/admin/delete/deleteEvent';
 import { differenceInMinutes } from 'date-fns';
 
 const AdminEvents = () => {
@@ -41,8 +42,21 @@ const AdminEvents = () => {
     navigate(`/admin/edit-event/${id}`);
   };
 
-  const handleDelete = (id) => {
-    alert(`¿Deseas eliminar el evento con ID: ${id}?`);
+  const handleDelete = async (id) => {
+    const evento = eventos.find((e) => e.id === id);
+    const eventName = evento ? evento.title : id;
+    if (window.confirm(`¿Deseas eliminar el evento: ${eventName}?`)) {
+      try {
+        const token = localStorage.getItem('authToken');
+        const user = JSON.parse(localStorage.getItem('user'));
+        const adminEmail = user?.email;
+        await deleteEvent(id, token, adminEmail);
+        setEventos(eventos.filter((evento) => evento.id !== id));
+      } catch (error) {
+        alert('Error eliminando el evento.');
+        console.error('Error deleting event:', error);
+      }
+    }
   };
 
   const handleEditClick = (evento) => {

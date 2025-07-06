@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../apiRoute';
+import { API_BASE_URL } from '../../apiRoute';
 
 export const fetchUserById = async (id: string, token: string): Promise<{ success: boolean; name: string; email: string; role: string; message?: string }> => {
   try {

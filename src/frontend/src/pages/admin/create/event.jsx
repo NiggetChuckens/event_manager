@@ -20,6 +20,18 @@ const CreateEvent = () => {
 
   const navigate = useNavigate();
 
+  // Helper to extract admin_email from token (assuming JWT with email in payload)
+  const getAdminEmail = () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return '';
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.email || '';
+    } catch {
+      return '';
+    }
+  };
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -31,7 +43,8 @@ const CreateEvent = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('authToken');
-      await createEvent({ ...formData }, token);
+      const admin_email = getAdminEmail();
+      await createEvent({ ...formData, admin_email }, token);
       alert('Evento creado con éxito!');
       navigate('/admin/events'); // Redirigir al panel de eventos
     } catch (error) {

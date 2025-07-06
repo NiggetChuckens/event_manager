@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import Footer from '../../../components/common/footer';
 import Navbar from '../../../components/admin/navbar';
-import { editEvent } from '../../../api/admin/editEvent';
-import { fetchEventDetails } from '../../../api/admin/fetchEventDetails';
+import { editEvent } from '../../../api/admin/edit/editEvent';
+import { fetchEventDetails } from '../../../api/admin/fetch/fetchEventDetails';
 
 const EditEvent = ({ eventId }) => {
   const [formData, setFormData] = useState({

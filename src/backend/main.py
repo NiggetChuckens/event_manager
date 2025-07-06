@@ -1,13 +1,15 @@
 import os, sys, flask, jwt
 from flask import request, jsonify
 from flask_cors import CORS
+from datetime import datetime
 
 # Ensure the db and functions directory is in the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'db')); sys.path.append(os.path.join(os.path.dirname(__file__), 'functions'))
 
 from db.db_init import Database
 from functions.user_management import create_user, login_user, delete_user, get_user_details_by_token, fetch_all_users, get_user_details_by_id, update_user
-from functions.event_management import fetch_event_id_by_details, create_event, edit_event, delete_event, fetch_upcoming_events, fetch_all_events_as_admin, fetch_event_by_id
+from functions.event_management import create_event, edit_event, delete_event, fetch_upcoming_events, fetch_all_events_as_admin, fetch_event_by_id
+from functions.department_management import create_department, fetch_departments, edit_department, fetch_department_by_id, delete_department
 
 db = Database().initialize()
 app = flask.Flask(__name__)
@@ -188,6 +190,14 @@ def create_event_api():
     importance = data.get("importance")
     url = data.get("url")
 
+    # Format start_date and end_date for display (optional, for logging or debugging)
+    try:
+        start_date_disp = datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M")
+        end_date_disp = datetime.strptime(end_date, "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M")
+        print(f"[CREATE EVENT] {title} | {start_date_disp} - {end_date_disp}")
+    except Exception as e:
+        print(f"[CREATE EVENT] Date parse error: {e}")
+
     if not admin_email or not moderator_email or not title or not description or not start_date or not end_date or not department or not importance or not url:
         return jsonify({"success": False, "message": "Missing required fields."}), 400
     
@@ -273,19 +283,30 @@ def delete_event_api():
     API endpoint to delete an event as an admin.
 
     Expects:
-        JSON object with 'admin_id' and 'event_id'.
+        JSON object with 'event_id'.
+        'Authorization' header with token.
 
     Returns:
         JSON response with success or error message.
     """
     data = request.json
-    admin_id = data.get("admin_id")
     event_id = data.get("event_id")
+    token = request.headers.get("Authorization")
+    if not token:
+        return jsonify({"success": False, "message": "Token is required."}), 400
+    token = token.replace("Bearer ", "")
+    try:
+        user_data = get_user_details_by_token(token)
+        if user_data['role'] != 'admin':
+            return jsonify({"success": False, "message": "Only admins can delete events."}), 403
+        admin_email = user_data['email']
+    except Exception:
+        return jsonify({"success": False, "message": "Invalid token."}), 401
 
-    if not admin_id or not event_id:
-        return jsonify({"success": False, "message": "Admin ID and Event ID are required"}), 400
+    if not event_id:
+        return jsonify({"success": False, "message": "Event ID is required"}), 400
 
-    result = delete_event(admin_id, event_id)
+    result = delete_event(admin_email, event_id)
     return jsonify(result)
 
 @app.route("/get_event_by_id", methods=["GET"])
@@ -305,6 +326,79 @@ def get_event_by_id_api():
 
     result = fetch_event_by_id(event_id)
     print(result)
+    return jsonify(result)
+
+###################################################################################
+# Department Management Endpoints
+
+@app.route("/create_department", methods=["POST"])
+def create_department_api():
+    """
+    API endpoint to create a new department.
+    Expects:
+        JSON object with 'name', 'manager_name', and 'manager_email'.
+    Returns:
+        JSON response with success or error message.
+    """
+    data = request.json
+    name = data.get("name")
+    manager_name = data.get("manager_name")
+    manager_email = data.get("manager_email")
+    result = create_department(name, manager_name, manager_email)
+    return jsonify(result)
+
+@app.route("/edit_department", methods=["POST"])
+def edit_department_api():
+    """
+    API endpoint to edit a department.
+    Expects:
+        JSON object with 'id', 'name', 'manager_name', and 'manager_email'.
+    Returns:
+        JSON response with success or error message.
+    """
+    data = request.json
+    department_id = data.get("id")
+    name = data.get("name")
+    manager_name = data.get("manager_name")
+    manager_email = data.get("manager_email")
+    result = edit_department(department_id, name, manager_name, manager_email)
+    return jsonify(result)
+
+@app.route("/fetch_departments", methods=["GET"])
+def fetch_departments_api():
+    """
+    API endpoint to fetch all departments.
+    Returns:
+        JSON response with list of departments.
+    """
+    result = fetch_departments()
+    return jsonify(result)
+
+@app.route("/get_department_by_id", methods=["GET"])
+def get_department_by_id_api():
+    """
+    API endpoint to fetch a department by id.
+    Expects:
+        Query parameter 'id'.
+    Returns:
+        JSON response with department data or error message.
+    """
+    id = request.args.get("id")
+    result = fetch_department_by_id(id)
+    return jsonify(result)
+
+@app.route("/delete_department", methods=["POST"])
+def delete_department_api():
+    """
+    API endpoint to delete a department.
+    Expects:
+        JSON object with 'id'.
+    Returns:
+        JSON response with success or error message.
+    """
+    data = request.json
+    department_id = data.get("id")
+    result = delete_department(department_id)
     return jsonify(result)
 
 if __name__ == '__main__':

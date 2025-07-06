@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchEvents } from '../../api/user/fetchEvents';
+import { fetchEvents } from '../../api/user/fetch/fetchEvents';
 
 const EventsConfirmed = ({ usuarioId, onClose }) => {
     const [eventos, setEventos] = useState([]);
