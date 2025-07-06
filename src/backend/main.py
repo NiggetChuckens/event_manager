@@ -9,7 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'db')); sys.path.append(
 from db.db_init import Database
 from functions.user_management import create_user, login_user, delete_user, get_user_details_by_token, fetch_all_users, get_user_details_by_id, update_user
 from functions.event_management import create_event, edit_event, delete_event, fetch_upcoming_events, fetch_all_events_as_admin, fetch_event_by_id
-from functions.department_management import create_department, fetch_departments, edit_department, fetch_department_by_id, delete_department
+from functions.department_management import create_department, fetch_departments, edit_department, fetch_department_by_id, delete_department, fetch_department_names
 
 db = Database().initialize()
 app = flask.Flask(__name__)
@@ -60,7 +60,7 @@ def login():
         JSON object with 'email' and 'password'.
 
     Returns:
-        JSON response with success message and token.
+        JSON response with success message and token (if login is successful).
     """
     data = request.json
     email = data.get("email")
@@ -69,7 +69,8 @@ def login():
     if not email or not password:
         return jsonify({"success": False, "message": "Email and password are required"}), 400
 
-    return jsonify(login_user(email, password))
+    result = login_user(email, password)
+    return jsonify(result)
 
 @app.route("/delete_user", methods=["POST"])
 def delete_user_api():
@@ -91,6 +92,29 @@ def delete_user_api():
 
     result = delete_user(admin_email, target_email)
     return jsonify(result)
+
+@app.route("/validate_token", methods=["POST", "OPTIONS"])
+def validate_token():
+    """
+    API endpoint to validate a token.
+
+    Expects:
+        'Authorization' header with token.
+
+    Returns:
+        JSON response with success message and user data, or error message.
+    """
+    token = request.headers.get("Authorization")
+    print(f"[VALIDATE TOKEN] Received token: {token}")
+    if not token:
+        return jsonify({"success": False, "message": "Token is required."}), 400
+
+    token = token.replace("Bearer ", "")
+    try:
+        user_data = get_user_details_by_token(token)
+        return jsonify({"success": True, "user": user_data}), 200
+    except Exception:
+        return jsonify({"success": False, "message": "Invalid token."}), 401
 
 @app.route("/user-details", methods=["GET"])
 def user_details():
@@ -146,22 +170,36 @@ def update_user_api():
     API endpoint to update user details.
 
     Expects:
-        JSON object with 'id', 'name', 'email', 'role', and 'admin_email'.
+        JSON object with 'id', 'name', 'email', 'role', 'departamento', and 'admin_email'.
 
     Returns:
         JSON response with success or error message.
     """
     data = request.json
+    
+    print(f"[UPDATE USER] Received data: {data}")
+    
     user_id = data.get("id")
     name = data.get("name")
     email = data.get("email")
     role = data.get("role")
-    admin_email = data.get("admin_email")
+    departamento = data.get("departamento")
 
-    if not user_id or not name or not email or not role or not admin_email:
+    # Get admin_email from token in Authorization header
+    token = request.headers.get("Authorization")
+    if not token:
+        return jsonify({"success": False, "message": "Token is required."}), 400
+    token = token.replace("Bearer ", "")
+    try:
+        user_data = get_user_details_by_token(token)
+        admin_email = user_data["email"]
+    except Exception:
+        return jsonify({"success": False, "message": "Invalid token."}), 401
+
+    if not user_id or not name or not email or not role or not departamento:
         return jsonify({"success": False, "message": "All fields are required"}), 400
 
-    result = update_user(user_id, name, email, role, admin_email)
+    result = update_user(user_id, name, email, role, admin_email, departamento)
     return jsonify(result)
 
 
@@ -328,6 +366,50 @@ def get_event_by_id_api():
     print(result)
     return jsonify(result)
 
+@app.route("/confirmed_events", methods=["GET"])
+def confirmed_events_api():
+    """
+    API endpoint to fetch confirmed events.
+
+    Expects:
+        'Authorization' header with token.
+
+    Returns:
+        JSON response with list of confirmed events or error message.
+    """
+    token = request.headers.get("Authorization")
+    if not token:
+        return jsonify({"success": False, "message": "Token is required."}), 400
+    token = token.replace("Bearer ", "")
+    try:
+        user_data = get_user_details_by_token(token)
+    except Exception:
+        return jsonify({"success": False, "message": "Invalid token."}), 401
+    result = fetch_confirmed_events(user_data['email'])
+    return jsonify(result)
+
+@app.route("/pending_events", methods=["GET"])
+def pending_events_api():
+    """
+    API endpoint to fetch pending events.
+
+    Expects:
+        'Authorization' header with token.
+
+    Returns:
+        JSON response with list of pending events or error message.
+    """
+    token = request.headers.get("Authorization")
+    if not token:
+        return jsonify({"success": False, "message": "Token is required."}), 400
+    token = token.replace("Bearer ", "")
+    try:
+        user_data = get_user_details_by_token(token)
+    except Exception:
+        return jsonify({"success": False, "message": "Invalid token."}), 401
+    result = fetch_pending_events(user_data['email'])
+    return jsonify(result)
+
 ###################################################################################
 # Department Management Endpoints
 
@@ -385,6 +467,16 @@ def get_department_by_id_api():
     """
     id = request.args.get("id")
     result = fetch_department_by_id(id)
+    return jsonify(result)
+
+@app.route("/departments", methods=["GET"])
+def get_department_names_api():
+    """
+    API endpoint to fetch only department names for dropdowns.
+    Returns:
+        JSON response with list of department names.
+    """
+    result = fetch_department_names()
     return jsonify(result)
 
 @app.route("/delete_department", methods=["POST"])

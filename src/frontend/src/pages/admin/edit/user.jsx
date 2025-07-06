@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Footer from '../../../components/common/footer';
 import NavbarAdmin from '../../../components/admin/navbar';
-import { fetchUserById, updateUser } from '../../../api/admin/edit/editUser';
+import { fetchUserById, updateUser, fetchDepartments } from '../../../api/admin/edit/editUser';
 
 const EditUserPage = () => {
   const { id } = useParams();
@@ -16,13 +16,7 @@ const EditUserPage = () => {
     departamento: ''
   });
 
-  const departamentos = [
-    'Recursos Humanos',
-    'TI',
-    'Marketing',
-    'Finanzas',
-    'Logística'
-  ];
+  const [departamentos, setDepartamentos] = useState([]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -52,6 +46,24 @@ const EditUserPage = () => {
     if (id) fetchUser();
   }, [id]);
 
+  useEffect(() => {
+    const fetchDeps = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+        const result = await fetchDepartments(token);
+        if (result.success) {
+          setDepartamentos(result.departments);
+        } else {
+          setDepartamentos([]);
+        }
+      } catch (error) {
+        setDepartamentos([]);
+      }
+    };
+    fetchDeps();
+  }, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -69,7 +81,10 @@ const EditUserPage = () => {
       const decodedToken = JSON.parse(atob(token.split('.')[1]));
       const adminEmail = decodedToken.email;
 
-      const result = await updateUser(id, form, adminEmail, token);
+      // Merge admin_email and id into the form data
+      const formWithAdmin = { ...form, admin_email: adminEmail, id };
+
+      const result = await updateUser(formWithAdmin, token);
       if (result.success) {
         setNotification('Usuario actualizado correctamente');
         setTimeout(() => navigate('/admin/users'), 2000);

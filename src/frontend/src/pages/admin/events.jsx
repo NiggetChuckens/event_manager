@@ -61,21 +61,21 @@ const AdminEvents = () => {
 
   const handleEditClick = (evento) => {
     setEditingEventId(evento.id);
-    const startDate = new Date(evento.start_date); // Parse string into Date object
+    const startDate = new Date(evento.start_date);
     const endDate = new Date(evento.end_date);
-    const duration = differenceInMinutes(endDate, startDate);
+    const duration = (!isNaN(startDate) && !isNaN(endDate)) ? differenceInMinutes(endDate, startDate) : '';
 
     setFormData({
       titulo: evento.title,
       descripcion: evento.description,
-      fecha: startDate.toISOString().split('T')[0], 
-      hora: startDate.toISOString().split('T')[1].split(':00.')[0], 
+      fecha: !isNaN(startDate) ? startDate.toISOString().split('T')[0] : '',
+      hora: !isNaN(startDate) ? startDate.toISOString().split('T')[1].split(':00.')[0] : '',
       lugar: evento.url,
       importancia: evento.importance,
       duracion: duration,
       unidadDuracion: 'minutos',
-      moderador: evento.moderator_email, 
-      departamento: evento.department, 
+      moderador: evento.moderator_email,
+      departamento: evento.department,
     });
   };
 
@@ -117,7 +117,8 @@ const AdminEvents = () => {
             >
               <div className="d-flex justify-content-between align-items-center w-100">
                 <span>
-                  {evento.title} - {evento.start_date.split('T')[1].split(':00.')[0]}
+                  {evento.title} - {typeof evento.start_date === 'string' && evento.start_date.includes('T') ?
+                    (evento.start_date.split('T')[1].split(':00.')[0]) : evento.start_date}
                   {(() => {
                     const startDate = new Date(evento.start_date);
                     const endDate = new Date(evento.end_date);
@@ -130,10 +131,7 @@ const AdminEvents = () => {
                   })()}
                 </span>
                 <div>
-                  <button
-                    className="btn btn-sm btn-outline-success me-2"
-                    onClick={() => handleEditClick(evento)}
-                  >
+                  <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(evento.id)}>
                     Editar
                   </button>
                   <button

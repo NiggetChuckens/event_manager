@@ -84,3 +84,13 @@ def delete_department(id):
         return {"success": True, "message": "Department deleted successfully."}
     except Exception as e:
         return {"success": False, "message": str(e)}
+
+def fetch_department_names():
+    connection = sqlite3.connect(DATABASE)
+    cursor = connection.cursor()
+    try:
+        cursor.execute("SELECT name FROM Department")
+        names = [row[0] for row in cursor.fetchall()]
+        return {"success": True, "departments": names}
+    except Exception as e:
+        return {"success": False, "departments": [], "message": str(e)}

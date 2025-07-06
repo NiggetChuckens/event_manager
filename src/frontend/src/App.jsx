@@ -15,6 +15,7 @@ import Department from './pages/admin/departments';
 import CreateDepartment from './pages/admin/create/department';
 import EditDepartment from './pages/admin/edit/department';
 import { validateToken } from './api/admin/validate/validateToken';
+import { AuthProvider } from './context/AuthContext';
 
 const App = () => {
   const checkSessionValidity = async () => {
@@ -56,28 +57,30 @@ const App = () => {
 
   return (
     <Router>
-      <Routes>
-        {/* Default route */}
-        <Route path="/" element={<IniciarSesion />} />
-        <Route path="/login" element={<IniciarSesion />} />
+      <AuthProvider>
+        <Routes>
+          {/* Default route */}
+          <Route path="/" element={<IniciarSesion />} />
+          <Route path="/login" element={<IniciarSesion />} />
 
-        {/* User routes */}
-        <Route path="/home" element={<Home />} />
-        <Route path="/perfil" element={<Perfil />} />
+          {/* User routes */}
+          <Route path="/home" element={<Home />} />
+          <Route path="/perfil" element={<Perfil />} />
 
-        {/* Admin routes */}
-        <Route path="/admin/home" element={<HomeAdmin />} />
-        <Route path="/admin/users" element={<Users />} />
-        <Route path="/admin/stats" element={<Stats />} />
-        <Route path="/admin/events" element={<Events />} />
-        <Route path="/admin/create-user" element={<CreateUser />} />
-        <Route path="/admin/create-event" element={<CreateEvent />} />
-        <Route path="/admin/edit-user/:id" element={<EditUser />} />
-        <Route path="/admin/edit-event/:id" element={<EditEvent />} />
-        <Route path="/admin/departments" element={<Department />} />
-        <Route path="/admin/departments/create" element={<CreateDepartment />} />
-        <Route path="/admin/departments/edit/:id" element={<EditDepartment />} />
-      </Routes>
+          {/* Admin routes */}
+          <Route path="/admin/home" element={<HomeAdmin />} />
+          <Route path="/admin/users" element={<Users />} />
+          <Route path="/admin/stats" element={<Stats />} />
+          <Route path="/admin/events" element={<Events />} />
+          <Route path="/admin/create-user" element={<CreateUser />} />
+          <Route path="/admin/create-event" element={<CreateEvent />} />
+          <Route path="/admin/edit-user/:id" element={<EditUser />} />
+          <Route path="/admin/edit-event/:id" element={<EditEvent />} />
+          <Route path="/admin/departments" element={<Department />} />
+          <Route path="/admin/departments/create" element={<CreateDepartment />} />
+          <Route path="/admin/departments/edit/:id" element={<EditDepartment />} />
+        </Routes>
+      </AuthProvider>
     </Router>
   );
 };

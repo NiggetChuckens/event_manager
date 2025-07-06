@@ -17,11 +17,60 @@ def fetch_upcoming_events():
     events = cursor.fetchall()
     connection.close()
 
-    events_list = [
-        {"id": event[0], "title": event[1], "start_date": datetime.strptime(event[2], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[2] else event[2]}
-        for event in events
-    ]
+    events_list = []
+    for event in events:
+        date_str = event[2]
+        if date_str:
+            # Remove 'Z' if present
+            if date_str.endswith('Z'):
+                date_str = date_str[:-1]
+            try:
+                dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+            except ValueError:
+                try:
+                    dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
+                except ValueError:
+                    dt = None
+            formatted_date = dt.strftime("%d/%m/%Y %H:%M") if dt else date_str
+        else:
+            formatted_date = date_str
+        events_list.append({"id": event[0], "title": event[1], "start_date": formatted_date})
 
+    return {"success": True, "events": events_list}
+
+def fetch_confirmed_events(user_email):
+    """
+    Fetch confirmed events for a user by email.
+    """
+    connection = sqlite3.connect(DATABASE)
+    cursor = connection.cursor()
+    # Example: confirmed events are those where the user has confirmed assistance
+    cursor.execute("""
+        SELECT e.id, e.title, e.start_date FROM Event e
+        JOIN Assistance a ON e.id = a.event_id
+        JOIN User u ON a.user_id = u.id
+        WHERE u.email = ? AND a.status = 'confirmed'
+        ORDER BY e.start_date ASC
+    """, (user_email,))
+    events = cursor.fetchall()
+    connection.close()
+    events_list = []
+    for event in events:
+        date_str = event[2]
+        if date_str:
+            if date_str.endswith('Z'):
+                date_str = date_str[:-1]
+            try:
+                dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+            except ValueError:
+                try:
+                    dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
+                except ValueError:
+                    dt = None
+            formatted_date = dt.strftime("%d/%m/%Y %H:%M") if dt else date_str
+        else:
+            formatted_date = date_str
+        events_list.append({"id": event[0], "title": event[1], "start_date": formatted_date})
     return {"success": True, "events": events_list}
 
 def get_pending_events(user_id):
@@ -40,6 +89,52 @@ def get_pending_events(user_id):
         {'nombre': 'Evento 2', 'fecha_inicio': '2025-06-22'},
     ]
     return pending_events
+
+def fetch_pending_events(user_email):
+    """
+    Fetch pending events for a user by email, including department and can_confirm flag.
+    """
+    connection = sqlite3.connect(DATABASE)
+    cursor = connection.cursor()
+    # Get user's department
+    cursor.execute("SELECT department FROM User WHERE email = ?", (user_email,))
+    user_dept_row = cursor.fetchone()
+    user_department = user_dept_row[0] if user_dept_row else None
+    # Pending events for the user
+    cursor.execute("""
+        SELECT e.id, e.title, e.start_date, e.department FROM Event e
+        JOIN Assistance a ON e.id = a.event_id
+        JOIN User u ON a.user_id = u.id
+        WHERE u.email = ? AND a.status = 'pending'
+        ORDER BY e.start_date ASC
+    """, (user_email,))
+    events = cursor.fetchall()
+    connection.close()
+    events_list = []
+    for event in events:
+        date_str = event[2]
+        if date_str:
+            if date_str.endswith('Z'):
+                date_str = date_str[:-1]
+            try:
+                dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+            except ValueError:
+                try:
+                    dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
+                except ValueError:
+                    dt = None
+            formatted_date = dt.strftime("%d/%m/%Y %H:%M") if dt else date_str
+        else:
+            formatted_date = date_str
+        can_confirm = (user_department is not None and event[3] == user_department)
+        events_list.append({
+            "id": event[0],
+            "title": event[1],
+            "start_date": formatted_date,
+            "department": event[3],
+            "can_confirm": can_confirm
+        })
+    return {"success": True, "events": events_list}
 
 def is_admin(email):
     """
@@ -219,26 +314,21 @@ def fetch_all_events_as_admin(email):
 
     events_list = []
     for event in events:
-        cursor.execute("SELECT email FROM User WHERE id = ?", (event[5],))
-        mail = cursor.fetchone()
-        try:
-            start_disp = datetime.strptime(event[3], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[3] else event[3]
-            end_disp = datetime.strptime(event[4], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[4] else event[4]
-        except Exception:
-            start_disp = event[3]
-            end_disp = event[4]
-        events_list.append({
-            "id": event[0],
-            "title": event[1],
-            "description": event[2],
-            "start_date": start_disp,
-            "end_date": end_disp,
-            "moderator_id": event[5],
-            "moderator_email": mail,
-            "department": event[6],
-            "importance": event[7],
-            "url": event[8]
-        })
+        date_str = event[3]
+        formatted_date = date_str
+        if date_str and isinstance(date_str, str):
+            if date_str.endswith('Z'):
+                date_str = date_str[:-1]
+            try:
+                dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+                formatted_date = dt.strftime("%d/%m/%Y %H:%M")
+            except Exception:
+                try:
+                    dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
+                    formatted_date = dt.strftime("%d/%m/%Y %H:%M")
+                except Exception:
+                    formatted_date = date_str
+        events_list.append({"id": event[0], "title": event[1], "start_date": formatted_date})
     connection.close()
     return {"success": True, "events": events_list}
 
@@ -263,11 +353,74 @@ def fetch_event_by_id(event_id):
         return {"success": False, "message": "Event not found."}
 
     try:
-        start_disp = datetime.strptime(event[3], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[3] else event[3]
-        end_disp = datetime.strptime(event[4], "%Y-%m-%dT%H:%M:%S").strftime("%d/%m/%Y %H:%M") if event[4] else event[4]
+        if event[3]:
+            dt = None
+            try:
+                dt = datetime.strptime(event[3], "%Y-%m-%dT%H:%M:%S.%f")
+            except Exception:
+                try:
+                    dt = datetime.strptime(event[3], "%Y-%m-%dT%H:%M:%S")
+                except Exception:
+                    dt = None
+            if dt:
+                start_date_only = dt.strftime("%Y-%m-%d")
+                start_time_only = dt.strftime("%H:%M")
+            else:
+                start_date_only = event[3]
+                start_time_only = ''
+        else:
+            start_date_only = ''
+            start_time_only = ''
+        start_disp = event[3]
+        end_disp = event[4]
     except Exception:
         start_disp = event[3]
         end_disp = event[4]
+        start_date_only = event[3]
+        start_time_only = ''
+
+    moderator_email = None
+    if event[6]:
+        connection = sqlite3.connect(DATABASE)
+        cursor = connection.cursor()
+        cursor.execute("SELECT email FROM User WHERE id = ?", (event[6],))
+        mod_row = cursor.fetchone()
+        connection.close()
+        if mod_row:
+            moderator_email = mod_row[0]
+
+    # Calculate duration and unit
+    duracion = ''
+    unidad_duracion = 'minutos'
+    try:
+        if event[3] and event[4]:
+            start_dt = None
+            end_dt = None
+            try:
+                start_dt = datetime.strptime(event[3], "%Y-%m-%dT%H:%M:%S.%f")
+            except Exception:
+                try:
+                    start_dt = datetime.strptime(event[3], "%Y-%m-%dT%H:%M:%S")
+                except Exception:
+                    start_dt = None
+            try:
+                end_dt = datetime.strptime(event[4], "%Y-%m-%dT%H:%M:%S.%f")
+            except Exception:
+                try:
+                    end_dt = datetime.strptime(event[4], "%Y-%m-%dT%H:%M:%S")
+                except Exception:
+                    end_dt = None
+            if start_dt and end_dt:
+                delta = end_dt - start_dt
+                total_minutes = int(delta.total_seconds() // 60)
+                if total_minutes % 60 == 0:
+                    duracion = total_minutes // 60
+                    unidad_duracion = 'horas'
+                else:
+                    duracion = total_minutes
+                    unidad_duracion = 'minutos'
+    except Exception:
+        pass
 
     return {
         "success": True,
@@ -275,13 +428,17 @@ def fetch_event_by_id(event_id):
             "id": event[0],
             "title": event[1],
             "description": event[2],
-            "start_date": start_disp,
+            "start_date": start_date_only,
+            "time": start_time_only,
             "end_date": end_disp,
             "moderator": event[5],
             "moderator_id": event[6],
+            "moderator_email": moderator_email,
             "department": event[7],
             "importance": event[8],
-            "url": event[9]
+            "url": event[9],
+            "duracion": duracion,
+            "unidadDuracion": unidad_duracion
         }
     }
 

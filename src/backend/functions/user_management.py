@@ -197,7 +197,7 @@ def get_user_details_by_id(user_id):
         "role": user[3],
     }
 
-def update_user(user_id, name, email, role, admin_email):
+def update_user(user_id, name, email, role, admin_email, deparment):
     """
     Updates user details.
 
@@ -229,8 +229,8 @@ def update_user(user_id, name, email, role, admin_email):
         return {"success": False, "message": "User not found"}
 
     cursor.execute(
-        "UPDATE User SET name = ?, email = ?, user_role = ? WHERE id = ?",
-        (name, email, role, user_id)
+        "UPDATE User SET name = ?, email = ?, user_role = ? , department = ? WHERE id = ?",
+        (name, email, role, deparment, user_id)
     )
     connection.commit()
     connection.close()

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Footer from '../../../components/common/footer';
 import Navbar from '../../../components/admin/navbar';
 import { editEvent } from '../../../api/admin/edit/editEvent';
 import { fetchEventDetails } from '../../../api/admin/fetch/fetchEventDetails';
 
-const EditEvent = ({ eventId }) => {
+const EditEvent = () => {
+  const { id: eventId } = useParams();
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
@@ -33,9 +35,9 @@ const EditEvent = ({ eventId }) => {
             titulo: event.title,
             descripcion: event.description,
             fecha: event.start_date,
-            hora: event.time, // Updated field name
+            hora: event.time, 
             lugar: event.url,
-            moderador: event.moderator_email, // Ensure `moderador` is populated
+            moderador: event.moderator_email, 
             departamento: event.department,
             importancia: event.importance,
           });

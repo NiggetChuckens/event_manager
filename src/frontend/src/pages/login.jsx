@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { loginUser } from '../api/Login_handler';
   
 const Login = () => {
@@ -17,6 +17,10 @@ const Login = () => {
     e.preventDefault();
     const result = await loginUser(form.correo, form.contraseña);
     if (result.success) {
+      // Store token in sessionStorage
+      if (result.token) {
+        sessionStorage.setItem('authToken', result.token);
+      }
       const userType = result.userType; 
 
       if (userType === 'admin') {
