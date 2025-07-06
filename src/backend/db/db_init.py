@@ -82,7 +82,7 @@ class Database:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             event_id INTEGER NOT NULL,
-            confirmed BOOLEAN NOT NULL DEFAULT 0,
+            status TEXT NOT NULL DEFAULT 'pending',
             FOREIGN KEY (user_id) REFERENCES User(id),
             FOREIGN KEY (event_id) REFERENCES Event(id)
         )
@@ -99,6 +99,12 @@ class Database:
         ''')
         self.connection.commit()
         self.connection.close()
+        # Poblar la base de datos con datos de prueba si es una nueva creación
+        try:
+            from .populate_test_data import populate_test_data
+            populate_test_data()
+        except Exception as e:
+            print(f"[DB INIT] Error al poblar datos de prueba: {e}")
 
 if __name__ == "__main__":
     db = Database()

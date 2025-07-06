@@ -41,12 +41,12 @@ def fetch_upcoming_events():
 def fetch_confirmed_events(user_email):
     """
     Fetch confirmed events for a user by email.
+    Returns events with department info.
     """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
-    # Example: confirmed events are those where the user has confirmed assistance
     cursor.execute("""
-        SELECT e.id, e.title, e.start_date FROM Event e
+        SELECT e.id, e.title, e.start_date, e.department FROM Event e
         JOIN Assistance a ON e.id = a.event_id
         JOIN User u ON a.user_id = u.id
         WHERE u.email = ? AND a.status = 'confirmed'
@@ -70,7 +70,7 @@ def fetch_confirmed_events(user_email):
             formatted_date = dt.strftime("%d/%m/%Y %H:%M") if dt else date_str
         else:
             formatted_date = date_str
-        events_list.append({"id": event[0], "title": event[1], "start_date": formatted_date})
+        events_list.append({"id": event[0], "title": event[1], "start_date": formatted_date, "department": event[3]})
     return {"success": True, "events": events_list}
 
 def get_pending_events(user_id):
@@ -90,24 +90,27 @@ def get_pending_events(user_id):
     ]
     return pending_events
 
-def fetch_pending_events(user_email):
+def fetch_pending_events(user_email, department=None):
     """
-    Fetch pending events for a user by email, including department and can_confirm flag.
+    Fetch pending events for a user by email, optionally filtered by department, including department and can_confirm flag.
     """
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
-    # Get user's department
     cursor.execute("SELECT department FROM User WHERE email = ?", (user_email,))
     user_dept_row = cursor.fetchone()
     user_department = user_dept_row[0] if user_dept_row else None
-    # Pending events for the user
-    cursor.execute("""
+    query = """
         SELECT e.id, e.title, e.start_date, e.department FROM Event e
         JOIN Assistance a ON e.id = a.event_id
         JOIN User u ON a.user_id = u.id
         WHERE u.email = ? AND a.status = 'pending'
-        ORDER BY e.start_date ASC
-    """, (user_email,))
+    """
+    params = [user_email]
+    if department:
+        query += " AND e.department = ?"
+        params.append(department)
+    query += " ORDER BY e.start_date ASC"
+    cursor.execute(query, params)
     events = cursor.fetchall()
     connection.close()
     events_list = []
@@ -461,3 +464,40 @@ def fetch_event_id_by_details(title, start_date):
     connection.close()
 
     return event[0] if event else None
+
+def fetch_events_by_department(department):
+    """
+    Fetch all events for a specific department.
+    Args:
+        department (str): The department name.
+    Returns:
+        dict: A dictionary with a success flag and a list of events for the department.
+    """
+    connection = sqlite3.connect(DATABASE)
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, title, start_date, department FROM Event WHERE department = ? ORDER BY start_date ASC", (department,))
+    events = cursor.fetchall()
+    connection.close()
+    events_list = []
+    for event in events:
+        date_str = event[2]
+        if date_str:
+            if date_str.endswith('Z'):
+                date_str = date_str[:-1]
+            try:
+                dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+            except ValueError:
+                try:
+                    dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
+                except ValueError:
+                    dt = None
+            formatted_date = dt.strftime("%d/%m/%Y %H:%M") if dt else date_str
+        else:
+            formatted_date = date_str
+        events_list.append({
+            "id": event[0],
+            "title": event[1],
+            "start_date": formatted_date,
+            "department": event[3]
+        })
+    return {"success": True, "events": events_list}

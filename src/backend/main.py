@@ -8,12 +8,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'db')); sys.path.append(
 
 from db.db_init import Database
 from functions.user_management import create_user, login_user, delete_user, get_user_details_by_token, fetch_all_users, get_user_details_by_id, update_user
-from functions.event_management import create_event, edit_event, delete_event, fetch_upcoming_events, fetch_all_events_as_admin, fetch_event_by_id
+from functions.event_management import create_event, edit_event, delete_event, fetch_upcoming_events, fetch_all_events_as_admin, fetch_event_by_id, fetch_pending_events
 from functions.department_management import create_department, fetch_departments, edit_department, fetch_department_by_id, delete_department, fetch_department_names
 
 db = Database().initialize()
 app = flask.Flask(__name__)
-CORS(app)
+CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
+
+# Import fetch_events_by_department at the bottom to avoid circular import issues
+import functions.event_management as event_mgmt
 
 
 ###################################################################################
@@ -185,7 +188,6 @@ def update_user_api():
     role = data.get("role")
     departamento = data.get("departamento")
 
-    # Get admin_email from token in Authorization header
     token = request.headers.get("Authorization")
     if not token:
         return jsonify({"success": False, "message": "Token is required."}), 400
@@ -280,17 +282,6 @@ def edit_event_api():
                         url=url)
     return jsonify(result)
 
-@app.route("/upcoming_events", methods=["GET"])
-def upcoming_events_api():
-    """
-    API endpoint to fetch upcoming events.
-
-    Returns:
-        JSON response with list of upcoming events.
-    """
-    result = fetch_upcoming_events()
-    return jsonify(result)
-
 @app.route("/fetch_all_events", methods=["GET"])
 def fetch_all_events_api():
     """
@@ -366,49 +357,72 @@ def get_event_by_id_api():
     print(result)
     return jsonify(result)
 
+@app.route("/events_by_department", methods=["GET"])
+def events_by_department_api():
+    """
+    API endpoint to fetch all events for a specific department.
+    Expects:
+        Query parameter 'department'.
+    Returns:
+        JSON response with list of events for the department or error message.
+    """
+    department = request.args.get("department")
+    if not department:
+        return jsonify({"success": False, "message": "Department is required."}), 400
+    # Query events for the department
+    result = event_mgmt.fetch_events_by_department(department)
+    return jsonify(result)
+
 @app.route("/confirmed_events", methods=["GET"])
 def confirmed_events_api():
     """
-    API endpoint to fetch confirmed events.
-
+    API endpoint to fetch confirmed events for the logged-in user.
     Expects:
         'Authorization' header with token.
-
     Returns:
-        JSON response with list of confirmed events or error message.
+        JSON response with confirmed events.
     """
     token = request.headers.get("Authorization")
     if not token:
         return jsonify({"success": False, "message": "Token is required."}), 400
     token = token.replace("Bearer ", "")
-    try:
-        user_data = get_user_details_by_token(token)
-    except Exception:
+    user_data = get_user_details_by_token(token)
+    if not user_data or not user_data.get("email"):
         return jsonify({"success": False, "message": "Invalid token."}), 401
-    result = fetch_confirmed_events(user_data['email'])
+    result = event_mgmt.fetch_confirmed_events(user_data["email"])
     return jsonify(result)
 
 @app.route("/pending_events", methods=["GET"])
 def pending_events_api():
     """
-    API endpoint to fetch pending events.
-
+    API endpoint to fetch pending events for the logged-in user.
     Expects:
         'Authorization' header with token.
-
+        Optional query param 'department'.
     Returns:
-        JSON response with list of pending events or error message.
+        JSON response with pending events.
     """
     token = request.headers.get("Authorization")
     if not token:
         return jsonify({"success": False, "message": "Token is required."}), 400
     token = token.replace("Bearer ", "")
-    try:
-        user_data = get_user_details_by_token(token)
-    except Exception:
+    user_data = get_user_details_by_token(token)
+    if not user_data or not user_data.get("email"):
         return jsonify({"success": False, "message": "Invalid token."}), 401
-    result = fetch_pending_events(user_data['email'])
+    department = request.args.get("department")
+    result = event_mgmt.fetch_pending_events(user_data["email"], department)
     return jsonify(result)
+
+@app.route("/upcoming_events", methods=["GET"])
+def upcoming_events_api():
+    """
+    API endpoint to fetch all upcoming events (sin filtro de usuario).
+    Returns:
+        JSON response with list of upcoming events.
+    """
+    result = event_mgmt.fetch_upcoming_events()
+    return jsonify(result)
+
 
 ###################################################################################
 # Department Management Endpoints
@@ -492,6 +506,68 @@ def delete_department_api():
     department_id = data.get("id")
     result = delete_department(department_id)
     return jsonify(result)
+
+@app.route("/cancel_assistance", methods=["POST"])
+def cancel_assistance_api():
+    """
+    API endpoint to cancel assistance for a user in an event.
+    Expects:
+        JSON object with 'event_id', 'user_email', and optionally 'token'.
+    Returns:
+        JSON response with success or error message.
+    """
+    data = request.json
+    event_id = data.get("event_id")
+    user_email = data.get("user_email")
+    if not event_id or not user_email:
+        return jsonify({"success": False, "message": "Missing event_id or user_email."}), 400
+    import sqlite3, os
+    DATABASE = os.path.join(os.path.dirname(__file__), 'backend', os.environ.get("DB_NAME")) if not os.path.exists(os.path.join(os.path.dirname(__file__), os.environ.get("DB_NAME"))) else os.path.join(os.path.dirname(__file__), os.environ.get("DB_NAME"))
+    connection = sqlite3.connect(DATABASE)
+    cursor = connection.cursor()
+    # Obtener el id del usuario
+    cursor.execute("SELECT id FROM User WHERE email = ?", (user_email,))
+    user_row = cursor.fetchone()
+    if not user_row:
+        connection.close()
+        return jsonify({"success": False, "message": "User not found."}), 404
+    user_id = user_row[0]
+    # Actualizar el status a 'pending' (o eliminar la asistencia si prefieres)
+    cursor.execute("UPDATE Assistance SET status = 'pending' WHERE user_id = ? AND event_id = ?", (user_id, event_id))
+    connection.commit()
+    connection.close()
+    return jsonify({"success": True, "message": "Asistencia cancelada correctamente."})
+
+@app.route("/confirm_assistance", methods=["POST"])
+def confirm_assistance_api():
+    """
+    API endpoint to confirm assistance for a user in an event.
+    Expects:
+        JSON object with 'event_id', 'user_email', and optionally 'token'.
+    Returns:
+        JSON response with success or error message.
+    """
+    data = request.json
+    event_id = data.get("event_id")
+    user_email = data.get("user_email")
+    if not event_id or not user_email:
+        return jsonify({"success": False, "message": "Missing event_id or user_email."}), 400
+    import sqlite3, os
+    DATABASE = os.path.join(os.path.dirname(__file__), 'backend', os.environ.get("DB_NAME")) if not os.path.exists(os.path.join(os.path.dirname(__file__), os.environ.get("DB_NAME"))) else os.path.join(os.path.dirname(__file__), os.environ.get("DB_NAME"))
+    connection = sqlite3.connect(DATABASE)
+    cursor = connection.cursor()
+    # Obtener el id del usuario
+    cursor.execute("SELECT id FROM User WHERE email = ?", (user_email,))
+    user_row = cursor.fetchone()
+    if not user_row:
+        connection.close()
+        return jsonify({"success": False, "message": "User not found."}), 404
+    user_id = user_row[0]
+    # Actualizar el status a 'confirmed'
+    cursor.execute("UPDATE Assistance SET status = 'confirmed' WHERE user_id = ? AND event_id = ?", (user_id, event_id))
+    connection.commit()
+    connection.close()
+    return jsonify({"success": True, "message": "Asistencia confirmada correctamente."})
 
 if __name__ == '__main__':
     app.run(debug=True)

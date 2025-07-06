@@ -146,6 +146,7 @@ def get_user_details_by_token(token):
         "username": user[1],
         "email": user[2],
         "role": user[4],
+        "department": user[5],
     }
 
 def fetch_all_users():
