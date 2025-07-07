@@ -13,15 +13,13 @@ from functions.department_management import create_department, fetch_departments
 
 db = Database().initialize()
 app = flask.Flask(__name__)
-CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
+CORS(app, origins=["https://event-manager-amber-alpha.vercel.app/"], supports_credentials=True)
 
 # Import fetch_events_by_department at the bottom to avoid circular import issues
 import functions.event_management as event_mgmt
 
-
 ###################################################################################
 # User Management Endpoints
-
 @app.route("/", methods=["POST"])
 def home():
     create_user('John Doe', 'jd@test.com', 'password123', 'jd2@test.com', 'user')
@@ -570,4 +568,8 @@ def confirm_assistance_api():
     return jsonify({"success": True, "message": "Asistencia confirmada correctamente."})
 
 if __name__ == '__main__':
+    import db.populate_test_data
+    db.populate_test_data.populate_test_data()
+    print("Starting Flask server...") 
+
     app.run(debug=True, port='5000', host='0.0.0.0')
