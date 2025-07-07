@@ -1,19 +1,34 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../../components/common/navbar';
 import Footer from '../../components/common/footer';
-import editProfile from '../../components/common/editProfile';
+import EditProfile from '../../components/common/editProfile';
 
 const Perfil = () => {
     const [usuario, setUsuario] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
+        // Simulación de datos de usuario para pruebas visuales
+        setTimeout(() => {
+            setUsuario({
+                nombre: 'Juan Pérez',
+                correo: 'juan.perez@email.com',
+                edad: 28,
+                direccion: 'Calle Falsa 123',
+                fechaNacimiento: '1997-05-12',
+                rol: 'Usuario',
+                fechaRegistro: '2024-01-15'
+            });
+        }, 500);
+        // Para datos reales, descomentar lo siguiente:
+        /*
         const email = localStorage.getItem('user_email');
         if (!email) return;
         fetch(`http://localhost:5000/usuario?email=${encodeURIComponent(email)}`)
         .then(res => res.json())
         .then(data => setUsuario(data.usuario))
         .catch(() => setUsuario(null));
+        */
     }, []);
 
     return (
@@ -52,7 +67,7 @@ const Perfil = () => {
         </div>
         
         {showModal && (
-            <editProfile usuario={usuario} onClose={() => setShowModal(false)} onUpdate={setUsuario} />
+            <EditProfile usuario={usuario} onClose={() => setShowModal(false)} onUpdate={setUsuario} />
         )}
         <Footer />
         </>

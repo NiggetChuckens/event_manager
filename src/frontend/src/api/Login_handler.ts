@@ -13,20 +13,20 @@ interface UserDetailsResponse {
   [key: string]: any; 
 }
 
-export const loginUser = async (email: string, password: string): Promise<LoginResponse> => {
+export const loginUser = async (email: string, password: string): Promise<LoginResponse & { userType?: string }> => {
   try {
     const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
+    console.log(response.data)
     if (response.data.success) {
       const token = response.data.token;
-      const userType = response.data.userType; // Assuming the API returns the user type
+      const userType = response.data.userType; 
 
-      // Store token and user type in localStorage
       localStorage.setItem('authToken', token);
-      localStorage.setItem('userType', userType);
 
       return {
         success: true,
         token,
+        userType,
         message: response.data.message
       };
     } else {

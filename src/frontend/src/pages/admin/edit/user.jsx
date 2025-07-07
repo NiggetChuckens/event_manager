@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Footer from '../../../components/common/footer';
 import NavbarAdmin from '../../../components/admin/navbar';
-import { fetchUserById, updateUser } from '../../../api/admin/editUser';
+import { fetchUserById, updateUser, fetchDepartments } from '../../../api/admin/edit/editUser';
 
 const EditUserPage = () => {
   const { id } = useParams();
@@ -13,7 +13,10 @@ const EditUserPage = () => {
     name: '',
     email: '',
     role: '',
+    departamento: ''
   });
+
+  const [departamentos, setDepartamentos] = useState([]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -30,6 +33,7 @@ const EditUserPage = () => {
             name: result.name,
             email: result.email,
             role: result.role,
+            departamento: result.departamento || ''
           });
         } else {
           console.error('Failed to fetch user details:', result.message);
@@ -41,6 +45,24 @@ const EditUserPage = () => {
 
     if (id) fetchUser();
   }, [id]);
+
+  useEffect(() => {
+    const fetchDeps = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+        const result = await fetchDepartments(token);
+        if (result.success) {
+          setDepartamentos(result.departments);
+        } else {
+          setDepartamentos([]);
+        }
+      } catch (error) {
+        setDepartamentos([]);
+      }
+    };
+    fetchDeps();
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -59,18 +81,20 @@ const EditUserPage = () => {
       const decodedToken = JSON.parse(atob(token.split('.')[1]));
       const adminEmail = decodedToken.email;
 
-      const result = await updateUser(id, form, adminEmail, token);
+      // Merge admin_email and id into the form data
+      const formWithAdmin = { ...form, admin_email: adminEmail, id };
+
+      const result = await updateUser(formWithAdmin, token);
       if (result.success) {
-        console.log('User updated successfully');
-        setNotification('User updated successfully!');
+        setNotification('Usuario actualizado correctamente');
         setTimeout(() => navigate('/admin/users'), 2000);
       } else {
         console.error('Failed to update user:', result.message);
-        setNotification('Failed to update user. Please try again.');
+        setNotification('No se pudo actualizar el usuario. Intente nuevamente.');
       }
     } catch (error) {
       console.error('Error updating user:', error);
-      setNotification('An error occurred while updating the user.');
+      setNotification('Ocurrió un error al actualizar el usuario.');
     }
   };
 
@@ -118,8 +142,25 @@ const EditUserPage = () => {
               required
             >
               <option value="">Selecciona un rol</option>
-              <option value="moderator">Moderador</option>
               <option value="user">Usuario</option>
+              <option value="moderator">Moderador</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Departamento</label>
+            <select
+              name="departamento"
+              className="form-select"
+              value={form.departamento}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Selecciona un departamento</option>
+              {departamentos.map((dep, index) => (
+                <option key={index} value={dep}>{dep}</option>
+              ))}
             </select>
           </div>
 

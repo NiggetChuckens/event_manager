@@ -2,7 +2,7 @@ import Footer from '../../components/common/footer';
 import NavbarAdmin from '../../components/admin/navbar';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { fetchUsers } from '../../api/admin/fetchUsers';
+import { fetchUsers } from '../../api/admin/fetch/fetchUsers';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);

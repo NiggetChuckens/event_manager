@@ -27,6 +27,16 @@ const AdminHome = () => {
             <div className="col-md-4">
               <div className="card border-success h-100">
                 <div className="card-body text-center">
+                  <h5 className="card-title text-success">🏢 Departamentos</h5>
+                  <p className="card-text text-muted">Crea y administra los departamentos disponibles.</p>
+                  <Link to="/admin/departments" className="btn btn-success">Gestionar</Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="card border-success h-100">
+                <div className="card-body text-center">
                   <h5 className="card-title text-success">👥 Usuarios</h5>
                   <p className="card-text text-muted">Administra los usuarios registrados y sus roles.</p>
                   <Link to="/admin/users" className="btn btn-success">Ver usuarios</Link>

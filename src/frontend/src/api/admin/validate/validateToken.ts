@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../apiRoute';
+import { API_BASE_URL } from '../../apiRoute';
 
 export const validateToken = async (token: string): Promise<{ success: boolean; message: string }> => {
   try {

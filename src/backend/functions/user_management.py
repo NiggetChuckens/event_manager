@@ -1,19 +1,19 @@
 import sqlite3, os, jwt, dotenv; dotenv.load_dotenv()
 from werkzeug.security import generate_password_hash, check_password_hash
 
-DATABASE = os.path.join(os.path.dirname(__file__), '..',os.environ.get("DB_NAME"))
+DATABASE = os.path.join(os.path.dirname(__file__), '..', os.environ.get("DB_NAME"))
 SECRET_KEY = os.environ.get("SECRET_KEY", "default_secret")
 
-def create_user(name, email, password, admin_email, rol):
+def create_user(name, email, password, admin_email, department, role):
     """
     Creates a new user.
-    
+
     Args:
         name (str): Name of the user.
         email (str): Email of the user.
         password (str): Password for the user.
         admin_email (str): Email of the admin creating the user.
-        rol (str): Role of the user ('user', 'moderator', 'admin').
+        role (str): Role of the user ('user', 'moderator', 'admin').
 
     Returns:
         dict: Success or error message.
@@ -28,8 +28,8 @@ def create_user(name, email, password, admin_email, rol):
 
     hashed_password = generate_password_hash(password)
     cursor.execute(
-        "INSERT INTO User (name, email, password, user_role, created_by) VALUES (?, ?, ?, ?, ?)",
-        (name, email, hashed_password, rol, admin_email)
+        "INSERT INTO User (name, email, password, user_role, department, created_by) VALUES (?, ?, ?, ?, ?, ?)",
+        (name, email, hashed_password, role, department, admin_email)
     )
     connection.commit()
     connection.close()
@@ -39,7 +39,7 @@ def create_user(name, email, password, admin_email, rol):
 def login_user(email, password):
     """
     Logs in a user.
-    
+
     Args:
         email (str): Email of the user.
         password (str): Password for the user.
@@ -50,7 +50,7 @@ def login_user(email, password):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT email, password, name, user_role FROM User WHERE email = ?", (email,))
+    cursor.execute("SELECT email, password, name, user_role, department FROM User WHERE email = ?", (email,))
     user = cursor.fetchone()
     connection.close()
 
@@ -67,7 +67,7 @@ def login_user(email, password):
     if user[3] not in ['user', 'moderator', 'admin']:
         return {"success": False, "message": "Invalid user role"}
     
-    token = jwt.encode({"email": email, "rol": user[3], "username": user[2]}, SECRET_KEY, algorithm="HS256")
+    token = jwt.encode({"role": user[3], "username": user[2]}, SECRET_KEY, algorithm="HS256")
 
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
@@ -78,12 +78,12 @@ def login_user(email, password):
     connection.commit()
     connection.close()
 
-    return {"success": True, "user-type": user[3], "message": "Login successful", "token": token}
+    return {"success": True, "userType": user[3], "message": "Login successful", "token": token}
 
 def delete_user(admin_email, target_email):
     """
     Deletes a user.
-    
+
     Args:
         admin_email (str): Email of the admin performing the deletion.
         target_email (str): Email of the user to be deleted.
@@ -116,8 +116,8 @@ def delete_user(admin_email, target_email):
 
 def get_user_details_by_token(token):
     """
-    Fetches user details by token.
-    
+    Fetch user details using the authorization token.
+
     Args:
         token (str): Authorization token.
 
@@ -127,41 +127,32 @@ def get_user_details_by_token(token):
     connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT * FROM User WHERE token = ?", (token,))
+    cursor.execute(
+        """
+        SELECT User.* FROM User
+        INNER JOIN Login ON User.id = Login.user_id
+        WHERE Login.token = ?
+        """,
+        (token,)
+    )
     user = cursor.fetchone()
     connection.close()
 
     if not user:
-        return {"success": False,"message": "Invalid token"}
+        return {"success": False, "message": "Invalid token"}
 
-    return {"success": True, "username": user[1]}
-
-def validate_token(token):
-    """
-    Validates a token.
-    
-    Args:
-        token (str): Authorization token.
-
-    Returns:
-        dict: Validation result.
-    """
-    connection = sqlite3.connect(DATABASE)
-    cursor = connection.cursor()
-
-    cursor.execute("SELECT token FROM Login WHERE token = ?", (token,))
-    valid_token = cursor.fetchone()
-    connection.close()
-
-    if not valid_token:
-        return {"success": False, "message": "Invalid or expired token"}
-
-    return {"success": True, "message": "Token is valid"}
+    return {
+        "success": True,
+        "username": user[1],
+        "email": user[2],
+        "role": user[4],
+        "department": user[5],
+    }
 
 def fetch_all_users():
     """
     Fetches all users.
-    
+
     Returns:
         dict: List of users.
     """
@@ -182,7 +173,7 @@ def fetch_all_users():
 def get_user_details_by_id(user_id):
     """
     Fetches user details by ID.
-    
+
     Args:
         user_id (int): ID of the user.
 
@@ -207,10 +198,10 @@ def get_user_details_by_id(user_id):
         "role": user[3],
     }
 
-def update_user(user_id, name, email, role, admin_email):
+def update_user(user_id, name, email, role, admin_email, deparment):
     """
     Updates user details.
-    
+
     Args:
         user_id (int): ID of the user.
         name (str): Updated name of the user.
@@ -239,8 +230,8 @@ def update_user(user_id, name, email, role, admin_email):
         return {"success": False, "message": "User not found"}
 
     cursor.execute(
-        "UPDATE User SET name = ?, email = ?, user_role = ? WHERE id = ?",
-        (name, email, role, user_id)
+        "UPDATE User SET name = ?, email = ?, user_role = ? , department = ? WHERE id = ?",
+        (name, email, role, deparment, user_id)
     )
     connection.commit()
     connection.close()
@@ -248,14 +239,14 @@ def update_user(user_id, name, email, role, admin_email):
     return {"success": True, "message": "User updated successfully"}
 
 if __name__ == "__main__":
-    response = create_user('John Doe', 'jd@test.com', 'password123', 'jd2@test.com', 'user')
+    response = create_user('John Doe', 'jd@test.com', 'password123', 'jd2@test.com', 'testing', 'user')
     print(response)
     
-    response = create_user('John Doe 2', 'jd2@test.com', 'password123', 'None', 'admin')
+    response = create_user('John Doe 2', 'jd2@test.com', 'password123', 'None', 'testing', 'admin')
     print(response)
     
-    response = create_user('Rodrigo', 'rodrigo@test.com', 'Choripan.132', 'None', 'admin')
+    response = create_user('Rodrigo', 'rodrigo@test.com', 'Choripan.132', 'None', 'testing', 'admin')
     print(response)
     
-    response = create_user('Moderator Test', 'modtest@test.com', 'password123', 'rodrigo@test.com', 'moderator')
+    response = create_user('Moderator Test', 'modtest@test.com', 'password123', 'rodrigo@test.com', 'testing', 'moderator')
     print(response)
