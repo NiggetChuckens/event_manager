@@ -9,23 +9,19 @@ departments = [f"Depto{i}" for i in range(1, 6)]
 users = []
 events = []
 
-# Crear usuarios usando create_user para asegurar hash correcto
 for i in range(15):
     name = f"Usuario{i+1}"
     email = f"usuario{i+1}@test.com"
     password = f"password{i+1}"
     role = random.choice(roles)
     department = random.choice(departments)
-    # El admin_email puede ser 'system' para pruebas
     create_user(name, email, password, 'system', department, role)
     users.append((name, email, password, role, department))
 
-# Conexión para obtener ids
 conn = sqlite3.connect(DB_PATH)
 c = conn.cursor()
 user_ids = [row[0] for row in c.execute("SELECT id FROM User").fetchall()]
 
-# Crear eventos
 now = datetime.now()
 for i in range(15):
     title = f"Evento{i+1}"
