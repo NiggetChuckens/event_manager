@@ -13,7 +13,7 @@ from functions.department_management import create_department, fetch_departments
 
 db = Database().initialize()
 app = flask.Flask(__name__)
-CORS(app, origins=["https://event-manager-amber-alpha.vercel.app/"], supports_credentials=True)
+CORS(app)
 
 # Import fetch_events_by_department at the bottom to avoid circular import issues
 import functions.event_management as event_mgmt
